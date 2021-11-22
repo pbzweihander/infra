@@ -1,5 +1,5 @@
 locals {
-  admin            = ["pbzweihander", "Thomas Lee"]
+  admin            = ["pbzweihander", "Kangwook Lee"]
   keybase_username = "pbzweihander"
 }
 
