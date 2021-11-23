@@ -1,0 +1,4 @@
+resource "aws_key_pair" "pbzweihander" {
+  key_name_prefix = "pbzweihander"
+  public_key      = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDEsETKXchadoRbqRableaubQqwVxLaZdzofy2KMpVrwl3moTX+MPzJv1rWWaAb9IsQO5vRSIhtaimT+zL0wVNSXAvhxZCG/2RqEmLHvwpQIuDKWcYlmqgVRb7FfV5EZKlIK9nuyVA6R5LgHBeYIPLn6bt+1rgvqlw/VIO/qWU+3v/4yazM1pc04f6NQ/Vz+a+3w93tJHXYKbGoHYwXXffBlt2ei9KfOCpxcG3aH4dB32K+MhZJPGjwrb4ocaCy32CVDTdlqXvDks3vJKrURxqyF9azYYkrR0yV8SOo1ZQOiF56VsNiyjlSpF654gwg3N8p02p+bf3TkqGR13PkqSpH"
+}
