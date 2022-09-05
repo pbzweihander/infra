@@ -32,11 +32,11 @@ resource "aws_security_group" "barkhorn" {
 }
 
 resource "aws_spot_instance_request" "barkhorn" {
-  spot_price = "0.0082"
+  spot_price = "0.0065"
   spot_type  = "one-time"
 
-  ami             = "ami-01d49bad571fb554d" # Arch linux ebs hvm x86_64 lts 20210602
-  instance_type   = "t3.small"
+  ami             = "ami-01b83e6ed7f173924" # Debian ebs hvm arm 20220906
+  instance_type   = "t4g.small"
   security_groups = [aws_security_group.barkhorn.id]
   subnet_id       = aws_subnet.default["ap-northeast-1a"].id
   tags            = { Name = "barkhorn" }
