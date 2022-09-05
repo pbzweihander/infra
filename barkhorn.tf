@@ -45,6 +45,6 @@ resource "aws_spot_instance_request" "barkhorn" {
     device_name           = "/dev/xvda"
     delete_on_termination = false
     tags                  = { Name = "barkhorn" }
-    volume_size           = 30
+    volume_size           = 100
   }
 }
