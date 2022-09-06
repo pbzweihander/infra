@@ -26,9 +26,14 @@ resource "aws_security_group" "barkhorn" {
     ipv6_cidr_blocks = ["::/0"]
   }
 
-  tags = {
-    Name = "barkhorn"
-  }
+  tags = { Name = "barkhorn" }
+}
+
+resource "aws_ebs_volume" "barkhorn" {
+  availability_zone = "ap-northeast-1a"
+  size              = 100
+
+  tags = { Name = "barkhorn" }
 }
 
 resource "aws_spot_instance_request" "barkhorn" {
@@ -43,8 +48,14 @@ resource "aws_spot_instance_request" "barkhorn" {
 
   ebs_block_device {
     device_name           = "/dev/xvda"
-    delete_on_termination = false
+    delete_on_termination = true
     tags                  = { Name = "barkhorn" }
-    volume_size           = 100
+    volume_size           = 20
   }
+}
+
+resource "aws_volume_attachment" "barkhorn" {
+  device_name = "/dev/xvdh"
+  volume_id   = aws_ebs_volume.barkhorn.id
+  instance_id = aws_spot_instance_request.barkhorn.spot_instance_id
 }
