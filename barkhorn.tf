@@ -45,7 +45,9 @@ resource "aws_spot_instance_request" "barkhorn" {
   instance_type   = "t4g.small"
   security_groups = [aws_security_group.barkhorn.id]
   subnet_id       = aws_subnet.default["ap-northeast-1a"].id
-  tags            = { Name = "barkhorn" }
+  key_name        = aws_key_pair.pbzweihander.id
+
+  tags = { Name = "barkhorn" }
 
   ebs_block_device {
     device_name           = "/dev/xvda"
