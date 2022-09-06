@@ -59,3 +59,7 @@ resource "aws_volume_attachment" "barkhorn" {
   volume_id   = aws_ebs_volume.barkhorn.id
   instance_id = aws_spot_instance_request.barkhorn.spot_instance_id
 }
+
+resource "aws_eip" "barkhorn" {
+  instance = aws_spot_instance_request.barkhorn.spot_instance_id
+}
