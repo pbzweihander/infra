@@ -45,7 +45,11 @@ resource "aws_spot_instance_request" "barkhorn" {
   instance_type   = "t4g.small"
   security_groups = [aws_security_group.barkhorn.id]
   subnet_id       = aws_subnet.default["ap-northeast-1a"].id
-  key_name        = aws_key_pair.pbzweihander.id
+
+  user_data = <<EOT
+#!/bin/bash
+curl -sSL https://github.com/pbzweihander.keys > /home/admin/.ssh/authorized_keys
+EOT
 
   tags = { Name = "barkhorn" }
 
