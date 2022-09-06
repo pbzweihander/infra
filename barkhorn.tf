@@ -37,8 +37,9 @@ resource "aws_ebs_volume" "barkhorn" {
 }
 
 resource "aws_spot_instance_request" "barkhorn" {
-  spot_price = "0.0065"
-  spot_type  = "one-time"
+  spot_price           = "0.0065"
+  spot_type            = "one-time"
+  wait_for_fulfillment = true
 
   ami             = "ami-01b83e6ed7f173924" # Debian ebs hvm arm 20220906
   instance_type   = "t4g.small"
