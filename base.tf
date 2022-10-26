@@ -29,6 +29,11 @@ terraform {
       source  = "hashicorp/kubernetes"
       version = "~> 2.14.0"
     }
+
+    helm = {
+      source  = "hashicorp/helm"
+      version = "~> 2.7.1"
+    }
   }
 }
 
@@ -40,4 +45,12 @@ provider "kubernetes" {
   host                   = module.strike_witches_eks.cluster_endpoint
   cluster_ca_certificate = base64decode(module.strike_witches_eks.cluster_certificate_authority_data)
   token                  = data.aws_eks_cluster_auth.strike_witches.token
+}
+
+provider "helm" {
+  kubernetes {
+    host                   = module.strike_witches_eks.cluster_endpoint
+    cluster_ca_certificate = base64decode(module.strike_witches_eks.cluster_certificate_authority_data)
+    token                  = data.aws_eks_cluster_auth.strike_witches.token
+  }
 }

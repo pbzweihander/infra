@@ -1,5 +1,10 @@
 locals {
   strike_witches_name = "strike-witches"
+
+  strike_witches_domains = [
+    aws_route53_zone.pbzweihander_dev,
+    aws_route53_zone.strike_witches_dev,
+  ]
 }
 
 module "strike_witches_vpc" {
