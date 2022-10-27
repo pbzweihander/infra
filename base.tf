@@ -34,6 +34,16 @@ terraform {
       source  = "hashicorp/helm"
       version = "~> 2.7.1"
     }
+
+    http = {
+      source  = "hashicorp/http"
+      version = "~> 3.1.0"
+    }
+
+    kubectl = {
+      source  = "gavinbunney/kubectl"
+      version = "~> 1.14.0"
+    }
   }
 }
 
@@ -53,6 +63,13 @@ provider "helm" {
     cluster_ca_certificate = base64decode(module.strike_witches_eks.cluster_certificate_authority_data)
     token                  = data.aws_eks_cluster_auth.strike_witches.token
   }
+}
+
+provider "kubectl" {
+  host                   = module.strike_witches_eks.cluster_endpoint
+  cluster_ca_certificate = base64decode(module.strike_witches_eks.cluster_certificate_authority_data)
+  token                  = data.aws_eks_cluster_auth.strike_witches.token
+  load_config_file       = false
 }
 
 data "aws_region" "current" {}
