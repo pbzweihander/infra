@@ -81,19 +81,27 @@ module "strike_witches_eks" {
     ami_type = "AL2_x86_64"
 
     iam_role_attach_cni_policy = true
+
+    instance_types = ["t3.small"]
+
+    create_lauch_template = false
+    launch_template_name  = ""
+
+    disk_size = 50
+
+    min_size = 1
+    max_size = 10
   }
 
   eks_managed_node_groups = {
-    default_node_group = {
-      instance_types = ["t3.small"]
-
-      create_lauch_template = false
-      launch_template_name  = ""
-
-      disk_size = 50
-
-      min_size = 1
-      max_size = 10
+    default_a = {
+      subnet_ids = [module.strike_witches_vpc.private_subnets[0]]
+    }
+    default_c = {
+      subnet_ids = [module.strike_witches_vpc.private_subnets[1]]
+    }
+    default_d = {
+      subnet_ids = [module.strike_witches_vpc.private_subnets[2]]
     }
   }
 }
