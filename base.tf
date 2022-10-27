@@ -54,3 +54,5 @@ provider "helm" {
     token                  = data.aws_eks_cluster_auth.strike_witches.token
   }
 }
+
+data "aws_region" "current" {}

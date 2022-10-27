@@ -29,7 +29,6 @@ data "aws_iam_policy_document" "strike_witches_external_dns" {
   }
 }
 
-
 resource "aws_iam_policy" "strike_witches_external_dns" {
   name   = "${local.strike_witches_name}-external-dns"
   policy = data.aws_iam_policy_document.strike_witches_external_dns.json
@@ -79,7 +78,7 @@ resource "helm_release" "strike_witches_external_dns" {
   values = [
     yamlencode({
       aws = {
-        region = "ap-northeast-1"
+        region = data.aws_region.current.name
       }
       rbac = {
         create = true

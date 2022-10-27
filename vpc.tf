@@ -4,9 +4,9 @@ resource "aws_vpc" "default" {
 
 locals {
   subnets = {
-    "ap-northeast-1a" = "172.31.16.0/20",
-    "ap-northeast-1c" = "172.31.0.0/20",
-    "ap-northeast-1d" = "172.31.32.0/20",
+    "${data.aws_region.current.name}a" = "172.31.16.0/20",
+    "${data.aws_region.current.name}c" = "172.31.0.0/20",
+    "${data.aws_region.current.name}d" = "172.31.32.0/20",
   }
 }
 
