@@ -77,6 +77,9 @@ resource "helm_release" "strike_witches_external_dns" {
 
   values = [
     yamlencode({
+      sources = [
+        "ingress",
+      ]
       aws = {
         region = data.aws_region.current.name
       }
