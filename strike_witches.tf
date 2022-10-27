@@ -1,10 +1,5 @@
 locals {
   strike_witches_name = "strike-witches"
-
-  strike_witches_domains = [
-    aws_route53_zone.pbzweihander_dev,
-    aws_route53_zone.strike_witches_dev,
-  ]
 }
 
 module "strike_witches_vpc" {
@@ -19,8 +14,21 @@ module "strike_witches_vpc" {
     "${data.aws_region.current.name}c",
     "${data.aws_region.current.name}d",
   ]
-  private_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
-  public_subnets  = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
+  private_subnets = [
+    "10.0.0.0/19",
+    "10.0.32.0/19",
+    "10.0.64.0/19",
+  ]
+  public_subnets = [
+    "10.0.96.0/19",
+    "10.0.128.0/19",
+    "10.0.160.0/19",
+  ]
+  intra_subnets = [
+    "10.0.192.0/20",
+    "10.0.208.0/20",
+    "10.0.224.0/20",
+  ]
 
   create_egress_only_igw = true
 
@@ -38,48 +46,45 @@ module "strike_witches_vpc" {
   }
 }
 
-module "strike_witches_eks" {
-  source  = "terraform-aws-modules/eks/aws"
-  version = "~> 18.30.2"
+resource "aws_acm_certificate" "wildcard_strike_witches_dev" {
+  domain_name       = "*.strike.witches.dev"
+  validation_method = "DNS"
 
-  cluster_name    = local.strike_witches_name
-  cluster_version = "1.23"
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_route53_record" "wildcard_strike_witches_dev_acm_validation" {
+  for_each = {
+    for dvo in aws_acm_certificate.wildcard_strike_witches_dev.domain_validation_options : dvo.domain_name => {
+      name   = dvo.resource_record_name
+      record = dvo.resource_record_value
+      type   = dvo.resource_record_type
+    }
+  }
+
+  allow_overwrite = true
+  name            = each.value.name
+  records         = [each.value.record]
+  ttl             = 60
+  type            = each.value.type
+  zone_id         = aws_route53_zone.strike_witches_dev.zone_id
+}
+
+module "strike_witches_eks" {
+  source = "./module/eks"
+
+  cluster_name       = local.strike_witches_name
+  kubernetes_version = "1.23"
 
   vpc_id     = module.strike_witches_vpc.vpc_id
   subnet_ids = module.strike_witches_vpc.private_subnets
 
-  create_aws_auth_configmap = true
-  manage_aws_auth_configmap = true
-
-  enable_irsa = true
-
-  node_security_group_additional_rules = {
-    ingress_self_all = {
-      description = "Node to node all ports/protocols"
-      protocol    = "-1"
-      from_port   = 0
-      to_port     = 0
-      type        = "ingress"
-      self        = true
-    }
-    ingress_master_all = {
-      description                   = "Control plane to node all ports/protocols"
-      protocol                      = "-1"
-      from_port                     = 0
-      to_port                       = 0
-      type                          = "ingress"
-      source_cluster_security_group = true
-    }
-    egress_all = {
-      description      = "Node all egress"
-      protocol         = "-1"
-      from_port        = 0
-      to_port          = 0
-      type             = "egress"
-      cidr_blocks      = ["0.0.0.0/0"]
-      ipv6_cidr_blocks = ["::/0"]
-    }
-  }
+  managed_domain_hosted_zones = [
+    aws_route53_zone.pbzweihander_dev,
+    aws_route53_zone.strike_witches_dev,
+  ]
 
   eks_managed_node_group_defaults = {
     ami_type = "AL2_x86_64"
@@ -99,17 +104,16 @@ module "strike_witches_eks" {
 
   eks_managed_node_groups = {
     default_a = {
+      name       = "sw-default-a"
       subnet_ids = [module.strike_witches_vpc.private_subnets[0]]
     }
     default_c = {
+      name       = "sw-default-c"
       subnet_ids = [module.strike_witches_vpc.private_subnets[1]]
     }
     default_d = {
+      name       = "sw-default-d"
       subnet_ids = [module.strike_witches_vpc.private_subnets[2]]
     }
   }
-}
-
-data "aws_eks_cluster_auth" "strike_witches" {
-  name = module.strike_witches_eks.cluster_id
 }

@@ -1,4 +1,4 @@
-resource "helm_release" "strike_witches_cert_manager" {
+resource "helm_release" "cert_manager" {
   repository = "https://charts.jetstack.io"
   chart      = "cert-manager"
   version    = "1.10.0"

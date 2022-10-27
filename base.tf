@@ -51,25 +51,4 @@ provider "aws" {
   region = "ap-northeast-1"
 }
 
-provider "kubernetes" {
-  host                   = module.strike_witches_eks.cluster_endpoint
-  cluster_ca_certificate = base64decode(module.strike_witches_eks.cluster_certificate_authority_data)
-  token                  = data.aws_eks_cluster_auth.strike_witches.token
-}
-
-provider "helm" {
-  kubernetes {
-    host                   = module.strike_witches_eks.cluster_endpoint
-    cluster_ca_certificate = base64decode(module.strike_witches_eks.cluster_certificate_authority_data)
-    token                  = data.aws_eks_cluster_auth.strike_witches.token
-  }
-}
-
-provider "kubectl" {
-  host                   = module.strike_witches_eks.cluster_endpoint
-  cluster_ca_certificate = base64decode(module.strike_witches_eks.cluster_certificate_authority_data)
-  token                  = data.aws_eks_cluster_auth.strike_witches.token
-  load_config_file       = false
-}
-
 data "aws_region" "current" {}
