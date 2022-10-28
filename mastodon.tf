@@ -1,0 +1,282 @@
+locals {
+  mastodon_namespace           = "mastodon"
+  mastodon_serviceaccount_name = "mastodon"
+  mastodon_web_domain          = "mastodon.pbzweihander.dev"
+
+  // https://github.com/hashicorp/terraform-provider-helm/issues/515#issuecomment-1237328171
+  mastodon_chart_path = "./chart/mastodon"
+  mastodon_chart_hash = md5(join("", [
+    for f in fileset(local.mastodon_chart_path, "**") :
+    filemd5(format("%s/%s", local.mastodon_chart_path, f))
+  ]))
+}
+
+resource "aws_acm_certificate" "mastodon_pbzweihander_dev" {
+  domain_name       = "mastodon.pbzweihander.dev"
+  validation_method = "DNS"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_route53_record" "mastodon_pbzweihander_dev_acm_validation" {
+  for_each = {
+    for dvo in aws_acm_certificate.mastodon_pbzweihander_dev.domain_validation_options : dvo.domain_name => {
+      name   = dvo.resource_record_name
+      record = dvo.resource_record_value
+      type   = dvo.resource_record_type
+    }
+  }
+
+  allow_overwrite = true
+  name            = each.value.name
+  records         = [each.value.record]
+  ttl             = 60
+  type            = each.value.type
+  zone_id         = aws_route53_zone.pbzweihander_dev.zone_id
+}
+
+resource "aws_db_parameter_group" "mastodon" {
+  name   = "mastodon"
+  family = "aurora-postgresql14"
+}
+
+resource "aws_rds_cluster_parameter_group" "mastodon" {
+  name   = "mastodon"
+  family = "aurora-postgresql14"
+}
+
+module "mastodon_rds" {
+  source  = "terraform-aws-modules/rds-aurora/aws"
+  version = "~> 7.6.0"
+
+  name              = "mastodon"
+  engine            = data.aws_rds_engine_version.aurora_postgresql_14_4.engine
+  engine_mode       = "provisioned"
+  engine_version    = data.aws_rds_engine_version.aurora_postgresql_14_4.version
+  storage_encrypted = true
+
+  database_name = "mastodon"
+
+  vpc_id                = module.strike_witches_vpc.vpc_id
+  subnets               = module.strike_witches_vpc.intra_subnets
+  create_security_group = true
+  allowed_cidr_blocks   = module.strike_witches_vpc.private_subnets_cidr_blocks
+
+  apply_immediately = true
+
+  db_parameter_group_name         = aws_db_parameter_group.mastodon.id
+  db_cluster_parameter_group_name = aws_rds_cluster_parameter_group.mastodon.id
+
+  serverlessv2_scaling_configuration = {
+    min_capacity = 0.5
+    max_capacity = 30
+  }
+
+  instance_class = "db.serverless"
+  instances = {
+    one = {}
+    two = {}
+  }
+}
+
+resource "aws_s3_bucket" "mastodon" {
+  bucket_prefix = "pbzweihander-mastodon"
+}
+
+resource "aws_s3_bucket_cors_configuration" "mastodon" {
+  bucket = aws_s3_bucket.mastodon.bucket
+
+  cors_rule {
+    allowed_headers = ["*"]
+    allowed_methods = ["GET", "HEAD"]
+    allowed_origins = [local.mastodon_web_domain]
+    max_age_seconds = "3000"
+  }
+}
+
+data "aws_iam_policy_document" "mastodon_s3_bucket_policy" {
+  statement {
+    actions = [
+      "s3:GetObject",
+    ]
+
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+
+    resources = [
+      "${aws_s3_bucket.mastodon.arn}/*",
+    ]
+
+    effect = "Allow"
+  }
+}
+
+resource "aws_s3_bucket_policy" "mastodon" {
+  bucket = aws_s3_bucket.mastodon.bucket
+  policy = data.aws_iam_policy_document.mastodon_s3_bucket_policy.json
+}
+
+data "aws_iam_policy_document" "mastodon" {
+  statement {
+    actions = [
+      "s3:DeleteObject",
+      "s3:PutObject",
+      "s3:PutObjectAcl",
+    ]
+
+    resources = [
+      "${aws_s3_bucket.mastodon.arn}/*"
+    ]
+
+    effect = "Allow"
+  }
+}
+
+resource "aws_iam_policy" "mastodon" {
+  name_prefix = "mastodon"
+  policy      = data.aws_iam_policy_document.mastodon.json
+}
+
+data "aws_iam_policy_document" "mastodon_assume" {
+  statement {
+    actions = ["sts:AssumeRoleWithWebIdentity"]
+
+    principals {
+      type        = "Federated"
+      identifiers = [module.strike_witches_eks.eks_cluster_oidc_provider_arn]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "${module.strike_witches_eks.eks_cluster_oidc_provider}:sub"
+
+      values = [
+        "system:serviceaccount:${local.mastodon_namespace}:${local.mastodon_serviceaccount_name}",
+      ]
+    }
+
+    effect = "Allow"
+  }
+}
+
+resource "aws_iam_role" "mastodon" {
+  name_prefix        = "mastodon"
+  assume_role_policy = data.aws_iam_policy_document.mastodon_assume.json
+}
+
+resource "aws_iam_role_policy_attachment" "mastodon" {
+  role       = aws_iam_role.mastodon.name
+  policy_arn = aws_iam_policy.mastodon.arn
+}
+
+resource "random_password" "mastodon_secret_key_base" {
+  length = 42
+}
+
+resource "random_password" "mastodon_otp_secret" {
+  length = 42
+}
+
+resource "helm_release" "mastodon" {
+  provider = helm.strike_witches
+
+  chart = local.mastodon_chart_path
+
+  namespace         = local.mastodon_namespace
+  name              = "mastodon"
+  create_namespace  = true
+  dependency_update = true
+
+  wait          = false
+  wait_for_jobs = false
+  timeout       = 900
+
+  values = [yamlencode({
+    replicaCount = 3
+    mastodon = {
+      createAdmin = {
+        enabled  = true
+        username = "pbzweihander"
+        email    = "pbzweihander@gmail.com"
+      }
+      locale       = "ko"
+      local_domain = "pbzweihander.dev"
+      web_domain   = local.mastodon_web_domain
+      s3 = {
+        enabled  = true
+        bucket   = aws_s3_bucket.mastodon.bucket
+        endpoint = "https://s3.${data.aws_region.current.name}.amazonaws.com"
+        hostname = "s3.${data.aws_region.current.name}.amazonaws.com"
+        region   = data.aws_region.current.name
+      }
+      secrets = {
+        secret_key_base = random_password.mastodon_secret_key_base.result
+        otp_secret      = random_password.mastodon_otp_secret.result
+        vapid = {
+          private_key = var.mastodon_vapid_private_key
+          public_key  = var.mastodon_vapid_public_key
+        }
+      }
+      smtp = {
+        from_address = "pbzweihander@gmail.com"
+        port         = 465
+        server       = "smtp.gmail.com"
+        tls          = true
+        login        = "pbzweihander@gmail.com"
+        password     = var.gmail_smtp_password
+      }
+    }
+    ingress = {
+      annotations = {
+        "kubernetes.io/ingress.class"            = "alb"
+        "alb.ingress.kubernetes.io/scheme"       = "internet-facing"
+        "alb.ingress.kubernetes.io/target-type"  = "ip"
+        "alb.ingress.kubernetes.io/listen-ports" = "[{\"HTTP\": 80}, {\"HTTPS\":443}]"
+        "alb.ingress.kubernetes.io/ssl-redirect" = "443"
+      }
+      hosts = [{
+        host  = local.mastodon_web_domain
+        paths = [{ path = "/" }]
+      }]
+      tls = false
+    }
+    postgresql = {
+      enabled            = false
+      postgresqlHostname = module.mastodon_rds.cluster_endpoint
+      auth = {
+        database = module.mastodon_rds.cluster_database_name
+        username = module.mastodon_rds.cluster_master_username
+        password = module.mastodon_rds.cluster_master_password
+      }
+    }
+    serviceAccount = {
+      annotations = {
+        "eks.amazonaws.com/role-arn" = aws_iam_role.mastodon.arn
+      }
+    }
+    affinity = {
+      podAntiAffinity = {
+        preferredDuringSchedulingIgnoredDuringExecution = [
+          {
+            podAffinityTerm = {
+              labelSelector = {
+                matchLabels = {
+                  "app.kubernetes.io/name"     = "mastodon"
+                  "app.kubernetes.io/instance" = "mastodon"
+                }
+              }
+              topologyKey = "topology.kubernetes.io/zone"
+            }
+            weight = 100
+          },
+        ]
+      }
+    }
+    # https://github.com/hashicorp/terraform-provider-helm/issues/515#issuecomment-1237328171
+    chartHash = local.mastodon_chart_hash
+  })]
+}
