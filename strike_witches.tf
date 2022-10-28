@@ -91,10 +91,8 @@ module "strike_witches_eks" {
 
     iam_role_attach_cni_policy = true
 
-    instance_types = ["t3.small"]
-
-    create_lauch_template = false
-    launch_template_name  = ""
+    create_launch_template = false
+    launch_template_name   = ""
 
     disk_size = 50
 
@@ -103,17 +101,20 @@ module "strike_witches_eks" {
   }
 
   eks_managed_node_groups = {
-    default_a = {
-      name       = "sw-default-a"
-      subnet_ids = [module.strike_witches_vpc.private_subnets[0]]
+    r5_large_a = {
+      name           = "sw-r5-large-a"
+      instance_types = ["r5.large"]
+      subnet_ids     = [module.strike_witches_vpc.private_subnets[0]]
     }
-    default_c = {
-      name       = "sw-default-c"
-      subnet_ids = [module.strike_witches_vpc.private_subnets[1]]
+    r5_large_c = {
+      name           = "sw-r5-large-c"
+      instance_types = ["r5.large"]
+      subnet_ids     = [module.strike_witches_vpc.private_subnets[1]]
     }
-    default_d = {
-      name       = "sw-default-d"
-      subnet_ids = [module.strike_witches_vpc.private_subnets[2]]
+    r5_large_d = {
+      name           = "sw-r5-large-d"
+      instance_types = ["r5.large"]
+      subnet_ids     = [module.strike_witches_vpc.private_subnets[2]]
     }
   }
 }
