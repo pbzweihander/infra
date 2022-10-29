@@ -85,17 +85,6 @@ resource "aws_s3_bucket" "mastodon" {
   bucket_prefix = "pbzweihander-mastodon"
 }
 
-resource "aws_s3_bucket_cors_configuration" "mastodon" {
-  bucket = aws_s3_bucket.mastodon.bucket
-
-  cors_rule {
-    allowed_headers = ["*"]
-    allowed_methods = ["GET", "HEAD"]
-    allowed_origins = [local.mastodon_web_domain]
-    max_age_seconds = "3000"
-  }
-}
-
 data "aws_iam_policy_document" "mastodon_s3_bucket_policy" {
   statement {
     actions = [
