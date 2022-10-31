@@ -186,6 +186,9 @@ resource "helm_release" "mastodon" {
 
   values = [yamlencode({
     replicaCount = 3
+    image = {
+      tag = "v3.5.3"
+    }
     mastodon = {
       createAdmin = {
         enabled  = true
