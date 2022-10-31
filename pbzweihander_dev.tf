@@ -31,10 +31,10 @@ resource "kubernetes_ingress_v1" "pbzweihander_dev" {
     namespace = "default"
     name      = "pbzweihander-dev"
     annotations = {
-      "alb.ingress.kubernetes.io/scheme"                     = "internet-facing"
-      "alb.ingress.kubernetes.io/target-type"                = "ip"
-      "alb.ingress.kubernetes.io/listen-ports"               = "[{\"HTTP\": 80}, {\"HTTPS\":443}]"
-      "alb.ingress.kubernetes.io/ssl-redirect"               = "443"
+      "alb.ingress.kubernetes.io/scheme"                    = "internet-facing"
+      "alb.ingress.kubernetes.io/target-type"               = "ip"
+      "alb.ingress.kubernetes.io/listen-ports"              = "[{\"HTTP\": 80}, {\"HTTPS\":443}]"
+      "alb.ingress.kubernetes.io/ssl-redirect"              = "443"
       "alb.ingress.kubernetes.io/actions.redirect-mastodon" = <<EOT
 {"type":"redirect","redirectConfig":{"protocol":"HTTPS","host":"mastodon.pbzweihander.dev","port":"443","statusCode":"HTTP_301"}}
 EOT
@@ -59,6 +59,18 @@ EOT
         }
         path {
           path      = "/@pbzweihander"
+          path_type = "Exact"
+          backend {
+            service {
+              name = "redirect-mastodon"
+              port {
+                name = "use-annotation"
+              }
+            }
+          }
+        }
+        path {
+          path      = "/@RustTrending"
           path_type = "Exact"
           backend {
             service {
