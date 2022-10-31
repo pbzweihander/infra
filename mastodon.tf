@@ -221,6 +221,20 @@ resource "helm_release" "mastodon" {
         login        = "pbzweihander@gmail.com"
         password     = var.gmail_smtp_password
       }
+      streaming = {
+        service = {
+          annotations = {
+            "alb.ingress.kubernetes.io/healthcheck-path" = "/api/v1/streaming/health"
+          }
+        }
+      }
+      web = {
+        service = {
+          annotations = {
+            "alb.ingress.kubernetes.io/healthcheck-path" = "/health"
+          }
+        }
+      }
     }
     ingress = {
       annotations = {

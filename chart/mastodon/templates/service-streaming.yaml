@@ -4,6 +4,10 @@ metadata:
   name: {{ include "mastodon.fullname" . }}-streaming
   labels:
     {{- include "mastodon.labels" . | nindent 4 }}
+  {{- with .Values.mastodon.streaming.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   type: {{ .Values.service.type }}
   ports:

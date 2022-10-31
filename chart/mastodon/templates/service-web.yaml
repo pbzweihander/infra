@@ -4,6 +4,10 @@ metadata:
   name: {{ include "mastodon.fullname" . }}-web
   labels:
     {{- include "mastodon.labels" . | nindent 4 }}
+  {{- with .Values.mastodon.web.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   type: {{ .Values.service.type }}
   ports:
