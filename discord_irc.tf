@@ -34,7 +34,7 @@ resource "kubernetes_deployment" "discord_irc" {
       spec {
         container {
           name  = "bot"
-          image = "ghcr.io/pbzweihander/discord-irc-rs:0ed3b1e20f9f3567e2231223aae14f84f650cd7f"
+          image = "ghcr.io/pbzweihander/discord-irc-rs:8bd6c8ef121038ceecab470ca36fa43a8301a217"
           volume_mount {
             name       = "config"
             mount_path = "/a"
