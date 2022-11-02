@@ -39,7 +39,7 @@ resource "kubernetes_deployment" "rust_trending_bot" {
       spec {
         container {
           name    = "bot"
-          image   = "ghcr.io/pbzweihander/rust-trending:238a56896652280cf661c1adf9e2e20f1aeac3e9"
+          image   = "ghcr.io/pbzweihander/rust-trending:62618682fa9d4068bcedf26bf6db9593729631cb"
           command = ["rust-trending", "/config/config.toml"]
           env {
             name  = "RUST_LOG"
