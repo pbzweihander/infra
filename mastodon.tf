@@ -81,6 +81,58 @@ module "mastodon_rds" {
   }
 }
 
+resource "aws_security_group" "mastodon_redis" {
+  name_prefix = "mastodon-redis"
+  vpc_id      = module.strike_witches_vpc.vpc_id
+
+  ingress {
+    description = "Allow strike-witches private subnets"
+    from_port   = 6379
+    to_port     = 6379
+    protocol    = "tcp"
+    cidr_blocks = module.strike_witches_vpc.private_subnets_cidr_blocks
+  }
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+}
+
+resource "aws_elasticache_subnet_group" "mastodon" {
+  name       = "mastodon"
+  subnet_ids = module.strike_witches_vpc.intra_subnets
+}
+
+resource "aws_elasticache_parameter_group" "mastodon" {
+  name   = "mastodon"
+  family = "redis6.x"
+}
+
+resource "aws_elasticache_replication_group" "mastodon" {
+  replication_group_id = "mastodon"
+  description          = "mastodon"
+  engine               = "redis"
+  engine_version       = "6.x"
+
+  preferred_cache_cluster_azs = slice(module.strike_witches_vpc.azs, 0, 2)
+  security_group_ids          = [aws_security_group.mastodon_redis.id]
+  subnet_group_name           = aws_elasticache_subnet_group.mastodon.name
+
+  num_cache_clusters         = 2
+  multi_az_enabled           = true
+  automatic_failover_enabled = true
+
+  node_type = "cache.t4g.small"
+
+  parameter_group_name = aws_elasticache_parameter_group.mastodon.name
+
+  apply_immediately = true
+}
+
 resource "aws_s3_bucket" "mastodon" {
   bucket_prefix = "pbzweihander-mastodon"
 }
