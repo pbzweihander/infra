@@ -250,7 +250,7 @@ resource "helm_release" "mastodon" {
   timeout       = 900
 
   values = [yamlencode({
-    replicaCount = 3
+    replicaCount = 2
     image = {
       tag = "v3.5.3"
     }
