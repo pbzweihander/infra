@@ -238,7 +238,6 @@ resource "helm_release" "mastodon" {
     }
     ingress = {
       annotations = {
-        "kubernetes.io/ingress.class"            = "alb"
         "alb.ingress.kubernetes.io/scheme"       = "internet-facing"
         "alb.ingress.kubernetes.io/target-type"  = "ip"
         "alb.ingress.kubernetes.io/listen-ports" = "[{\"HTTP\": 80}, {\"HTTPS\":443}]"
@@ -248,7 +247,8 @@ resource "helm_release" "mastodon" {
         host  = local.mastodon_web_domain
         paths = [{ path = "/" }]
       }]
-      tls = false
+      tls              = false
+      ingressClassName = "alb"
     }
     postgresql = {
       enabled            = false

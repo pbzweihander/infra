@@ -1,4 +1,4 @@
-Source: https://github.com/mastodon/mastodon/tree/dae954ef111b8e0ab17812d156f6c955b77d9859/chart
+Source: https://github.com/mastodon/mastodon/tree/628b3fa44916dba1bcb24af0a92b49edc4bf49ce/chart
 
 Modified...
 
