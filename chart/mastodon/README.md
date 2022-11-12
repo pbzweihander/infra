@@ -4,3 +4,4 @@ Modified...
 
 - `ingress.yaml`, `service-web.yaml`, and `service-streaming.yaml` files for using AWS load balancer controller
 - 'Chart.yaml`, and `configmap-env.yaml` files for using existing Redis
+- '_helpers.tpl` file to fix some bugs

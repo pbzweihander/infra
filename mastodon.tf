@@ -315,6 +315,9 @@ resource "helm_release" "mastodon" {
       tls              = false
       ingressClassName = "alb"
     }
+    elasticsearch = {
+      enabled = false
+    }
     postgresql = {
       enabled            = false
       postgresqlHostname = module.mastodon_rds.cluster_endpoint
