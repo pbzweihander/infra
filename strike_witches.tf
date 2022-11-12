@@ -101,19 +101,19 @@ module "strike_witches_eks" {
   }
 
   eks_managed_node_groups = {
-    r5_large_a = {
-      name           = "sw-r5-large-a"
-      instance_types = ["r5.large"]
+    t3a_medium_bottlerocket_a = {
+      name           = "sw-t3a-med-br-a"
+      ami_type       = "BOTTLEROCKET_x86_64"
+      platform       = "bottlerocket"
+      instance_types = ["t3a.medium"]
       subnet_ids     = [module.strike_witches_vpc.private_subnets[0]]
     }
-    r5_large_c = {
-      name           = "sw-r5-large-c"
-      instance_types = ["r5.large"]
-      subnet_ids     = [module.strike_witches_vpc.private_subnets[1]]
-    }
-    r5_large_d = {
-      name           = "sw-r5-large-d"
-      instance_types = ["r5.large"]
+    # ap-northeast-1c does not have t3a instances.
+    t3a_medium_bottlerocket_d = {
+      name           = "sw-t3a-med-br-d"
+      ami_type       = "BOTTLEROCKET_x86_64"
+      platform       = "bottlerocket"
+      instance_types = ["t3a.medium"]
       subnet_ids     = [module.strike_witches_vpc.private_subnets[2]]
     }
   }
