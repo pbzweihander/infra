@@ -222,6 +222,19 @@ resource "random_password" "mastodon_otp_secret" {
   length = 42
 }
 
+resource "kubernetes_secret" "mastodon_redis" {
+  provider = kubernetes.strike_witches
+
+  metadata {
+    name      = "mastodon-redis-external"
+    namespace = local.mastodon_namespace
+  }
+
+  data = {
+    redis-password = ""
+  }
+}
+
 resource "helm_release" "mastodon" {
   provider = helm.strike_witches
 
@@ -309,6 +322,13 @@ resource "helm_release" "mastodon" {
         database = module.mastodon_rds.cluster_database_name
         username = module.mastodon_rds.cluster_master_username
         password = module.mastodon_rds.cluster_master_password
+      }
+    }
+    redis = {
+      enabled       = false
+      redisHostname = aws_elasticache_replication_group.mastodon.primary_endpoint_address
+      auth = {
+        existingSecret = kubernetes_secret.mastodon_redis.metadata[0].name
       }
     }
     serviceAccount = {
