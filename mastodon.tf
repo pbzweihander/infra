@@ -57,7 +57,9 @@ module "mastodon_rds" {
   engine_version    = data.aws_rds_engine_version.aurora_postgresql_14_4.version
   storage_encrypted = true
 
-  database_name = "mastodon"
+  database_name          = "mastodon"
+  create_random_password = true
+  random_password_length = 30
 
   vpc_id                = module.strike_witches_vpc.vpc_id
   subnets               = module.strike_witches_vpc.intra_subnets
