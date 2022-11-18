@@ -278,6 +278,27 @@ resource "helm_release" "mastodon" {
           public_key  = var.mastodon_vapid_public_key
         }
       }
+      sidekiq = {
+        affinity = {
+          podAntiAffinity = {
+            preferredDuringSchedulingIgnoredDuringExecution = [
+              {
+                podAffinityTerm = {
+                  labelSelector = {
+                    matchLabels = {
+                      "app.kubernetes.io/name"      = "mastodon"
+                      "app.kubernetes.io/instance"  = "mastodon"
+                      "app.kubernetes.io/component" = "sidekiq"
+                    }
+                  }
+                  topologyKey = "topology.kubernetes.io/zone"
+                }
+                weight = 100
+              },
+            ]
+          }
+        }
+      }
       smtp = {
         from_address = "pbzweihander@gmail.com"
         port         = 465
@@ -292,11 +313,49 @@ resource "helm_release" "mastodon" {
             "alb.ingress.kubernetes.io/healthcheck-path" = "/api/v1/streaming/health"
           }
         }
+        affinity = {
+          podAntiAffinity = {
+            preferredDuringSchedulingIgnoredDuringExecution = [
+              {
+                podAffinityTerm = {
+                  labelSelector = {
+                    matchLabels = {
+                      "app.kubernetes.io/name"      = "mastodon"
+                      "app.kubernetes.io/instance"  = "mastodon"
+                      "app.kubernetes.io/component" = "streaming"
+                    }
+                  }
+                  topologyKey = "topology.kubernetes.io/zone"
+                }
+                weight = 100
+              },
+            ]
+          }
+        }
       }
       web = {
         service = {
           annotations = {
             "alb.ingress.kubernetes.io/healthcheck-path" = "/health"
+          }
+        }
+        affinity = {
+          podAntiAffinity = {
+            preferredDuringSchedulingIgnoredDuringExecution = [
+              {
+                podAffinityTerm = {
+                  labelSelector = {
+                    matchLabels = {
+                      "app.kubernetes.io/name"      = "mastodon"
+                      "app.kubernetes.io/instance"  = "mastodon"
+                      "app.kubernetes.io/component" = "web"
+                    }
+                  }
+                  topologyKey = "topology.kubernetes.io/zone"
+                }
+                weight = 100
+              },
+            ]
           }
         }
       }
@@ -337,24 +396,6 @@ resource "helm_release" "mastodon" {
     serviceAccount = {
       annotations = {
         "eks.amazonaws.com/role-arn" = aws_iam_role.mastodon.arn
-      }
-    }
-    affinity = {
-      podAntiAffinity = {
-        preferredDuringSchedulingIgnoredDuringExecution = [
-          {
-            podAffinityTerm = {
-              labelSelector = {
-                matchLabels = {
-                  "app.kubernetes.io/name"     = "mastodon"
-                  "app.kubernetes.io/instance" = "mastodon"
-                }
-              }
-              topologyKey = "topology.kubernetes.io/zone"
-            }
-            weight = 100
-          },
-        ]
       }
     }
     # https://github.com/hashicorp/terraform-provider-helm/issues/515#issuecomment-1237328171

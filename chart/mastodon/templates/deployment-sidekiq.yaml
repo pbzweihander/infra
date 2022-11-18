@@ -49,6 +49,11 @@ spec:
                   values:
                     - rails
             topologyKey: kubernetes.io/hostname
+      {{- else }}
+        {{- with .Values.mastodon.sidekiq.affinity | default .Values.affinity }}
+      affinity:
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
       {{- end }}
       volumes:
         - name: assets
