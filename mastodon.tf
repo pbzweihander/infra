@@ -312,7 +312,8 @@ resource "helm_release" "mastodon" {
       streaming = {
         service = {
           annotations = {
-            "alb.ingress.kubernetes.io/healthcheck-path" = "/api/v1/streaming/health"
+            "alb.ingress.kubernetes.io/healthcheck-path"        = "/api/v1/streaming/health"
+            "alb.ingress.kubernetes.io/target-group-attributes" = "stickiness.enabled=true,stickiness.lb_cookie.duration_seconds=300"
           }
         }
         affinity = {
