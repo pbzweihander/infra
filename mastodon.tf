@@ -224,8 +224,23 @@ resource "random_password" "mastodon_otp_secret" {
   length = 42
 }
 
+resource "kubernetes_namespace" "mastodon" {
+  provider = kubernetes.strike_witches
+
+  metadata {
+    name = local.mastodon_namespace
+    labels = {
+      "elbv2.k8s.aws/pod-readiness-gate-inject" = "enabled"
+    }
+  }
+}
+
 resource "kubernetes_secret" "mastodon_redis" {
   provider = kubernetes.strike_witches
+
+  depends_on = [
+    kubernetes_namespace.mastodon,
+  ]
 
   metadata {
     name      = "mastodon-redis-external"
@@ -240,11 +255,15 @@ resource "kubernetes_secret" "mastodon_redis" {
 resource "helm_release" "mastodon" {
   provider = helm.strike_witches
 
+  depends_on = [
+    kubernetes_namespace.mastodon,
+  ]
+
   chart = local.mastodon_chart_path
 
   namespace         = local.mastodon_namespace
   name              = "mastodon"
-  create_namespace  = true
+  create_namespace  = false
   dependency_update = true
 
   wait          = false
