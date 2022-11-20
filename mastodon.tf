@@ -252,7 +252,6 @@ resource "helm_release" "mastodon" {
   timeout       = 900
 
   values = [yamlencode({
-    replicaCount = 2
     image = {
       tag = "v4.0.2"
     }
@@ -281,6 +280,7 @@ resource "helm_release" "mastodon" {
         }
       }
       sidekiq = {
+        replicaCount = 2
         affinity = {
           podAntiAffinity = {
             preferredDuringSchedulingIgnoredDuringExecution = [
@@ -310,6 +310,7 @@ resource "helm_release" "mastodon" {
         password     = var.gmail_smtp_password
       }
       streaming = {
+        replicaCount = 1
         service = {
           annotations = {
             "alb.ingress.kubernetes.io/healthcheck-path"        = "/api/v1/streaming/health"
@@ -337,6 +338,7 @@ resource "helm_release" "mastodon" {
         }
       }
       web = {
+        replicaCount = 2
         service = {
           annotations = {
             "alb.ingress.kubernetes.io/healthcheck-path" = "/health"
