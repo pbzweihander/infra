@@ -66,7 +66,8 @@ module "mastodon_rds" {
   create_security_group = true
   allowed_cidr_blocks   = module.strike_witches_vpc.private_subnets_cidr_blocks
 
-  apply_immediately = true
+  preferred_maintenance_window = "sat:20:00-sat:21:00"
+  apply_immediately            = true
 
   db_parameter_group_name         = aws_db_parameter_group.mastodon.id
   db_cluster_parameter_group_name = aws_rds_cluster_parameter_group.mastodon.id
