@@ -73,8 +73,8 @@ module "mastodon_rds" {
   db_cluster_parameter_group_name = aws_rds_cluster_parameter_group.mastodon.id
 
   serverlessv2_scaling_configuration = {
-    min_capacity = 2
-    max_capacity = 30
+    min_capacity = 0.5
+    max_capacity = 10
   }
 
   instance_class = "db.serverless"
