@@ -12,3 +12,13 @@ variable "mastodon_vapid_public_key" {
   type      = string
   sensitive = true
 }
+
+variable "cheph_github_client_id" {
+  type      = string
+  sensitive = true
+}
+
+variable "cheph_github_client_secret" {
+  type      = string
+  sensitive = true
+}
