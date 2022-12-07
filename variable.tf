@@ -1,11 +1,14 @@
 variable "gmail_smtp_password" {
-  type = string
+  type      = string
+  sensitive = true
 }
 
 variable "mastodon_vapid_private_key" {
-  type = string
+  type      = string
+  sensitive = true
 }
 
 variable "mastodon_vapid_public_key" {
-  type = string
+  type      = string
+  sensitive = true
 }
