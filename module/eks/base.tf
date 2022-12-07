@@ -51,4 +51,6 @@ provider "kubectl" {
   load_config_file       = false
 }
 
+data "aws_caller_identity" "current" {}
+
 data "aws_region" "current" {}
