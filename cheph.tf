@@ -188,6 +188,10 @@ resource "kubernetes_deployment" "cheph" {
             name  = "S3_BUCKET_NAME"
             value = aws_s3_bucket.cheph.id
           }
+          env {
+            name  = "JWT_SECRET"
+            value = var.cheph_jwt_secret
+          }
         }
         affinity {
           pod_anti_affinity {
