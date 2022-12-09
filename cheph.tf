@@ -142,7 +142,7 @@ resource "kubernetes_deployment" "cheph" {
     labels    = local.cheph_labels
   }
   spec {
-    replicas = 1
+    replicas = 2
     selector {
       match_labels = local.cheph_labels
     }
