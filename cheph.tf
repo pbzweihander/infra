@@ -173,6 +173,10 @@ resource "kubernetes_deployment" "cheph" {
             }
           }
           env {
+            name  = "ALLOWED_EMAILS"
+            value = join(",", local.cheph_allowed_emails)
+          }
+          env {
             name  = "GITHUB_CLIENT_ID"
             value = var.cheph_github_client_id
           }
@@ -181,16 +185,16 @@ resource "kubernetes_deployment" "cheph" {
             value = var.cheph_github_client_secret
           }
           env {
-            name  = "ALLOWED_EMAILS"
-            value = join(",", local.cheph_allowed_emails)
-          }
-          env {
-            name  = "S3_BUCKET_NAME"
-            value = aws_s3_bucket.cheph.id
+            name  = "PUBLIC_URL"
+            value = "https://${local.cheph_domain}"
           }
           env {
             name  = "JWT_SECRET"
             value = var.cheph_jwt_secret
+          }
+          env {
+            name  = "S3_BUCKET_NAME"
+            value = aws_s3_bucket.cheph.id
           }
         }
         affinity {
