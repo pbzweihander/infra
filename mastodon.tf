@@ -268,7 +268,7 @@ resource "helm_release" "mastodon" {
 
   values = [yamlencode({
     image = {
-      tag = "v4.0.2"
+      tag = "v4.1.1"
     }
     mastodon = {
       createAdmin = {
