@@ -32,7 +32,7 @@ terraform {
 
     helm = {
       source  = "hashicorp/helm"
-      version = "~> 2.7.1"
+      version = "~> 2.9.0"
     }
 
     http = {
@@ -71,6 +71,10 @@ provider "helm" {
     host                   = module.strike_witches_eks.eks_cluster_endpoint
     cluster_ca_certificate = base64decode(module.strike_witches_eks.eks_cluster_certificate_authority_data)
     token                  = module.strike_witches_eks.eks_cluster_auth_token
+  }
+
+  experiments {
+    manifest = true
   }
 }
 
