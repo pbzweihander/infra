@@ -75,7 +75,6 @@ module "mastodon_rds" {
   instance_class = "db.t4g.medium"
   instances = {
     three = {}
-    four  = {}
   }
 }
 
