@@ -129,11 +129,33 @@ resource "kubernetes_service_account" "cheph" {
   }
 }
 
+resource "kubernetes_secret" "cheph" {
+  provider = kubernetes.strike_witches
+
+  depends_on = [
+    kubernetes_namespace.cheph,
+  ]
+
+  metadata {
+    namespace = local.cheph_namespace
+    name      = "cheph"
+    labels    = local.cheph_labels
+  }
+
+  data = {
+    GITHUB_CLIENT_ID     = var.cheph_github_client_id
+    GITHUB_CLIENT_SECRET = var.cheph_github_client_secret
+    JWT_SECRET           = var.cheph_jwt_secret
+  }
+}
+
 resource "kubernetes_deployment" "cheph" {
   provider = kubernetes.strike_witches
 
   depends_on = [
     kubernetes_namespace.cheph,
+    kubernetes_service_account.cheph,
+    kubernetes_secret.cheph,
   ]
 
   metadata {
@@ -177,24 +199,17 @@ resource "kubernetes_deployment" "cheph" {
             value = join(",", local.cheph_allowed_emails)
           }
           env {
-            name  = "GITHUB_CLIENT_ID"
-            value = var.cheph_github_client_id
-          }
-          env {
-            name  = "GITHUB_CLIENT_SECRET"
-            value = var.cheph_github_client_secret
-          }
-          env {
             name  = "PUBLIC_URL"
             value = "https://${local.cheph_domain}"
           }
           env {
-            name  = "JWT_SECRET"
-            value = var.cheph_jwt_secret
-          }
-          env {
             name  = "S3_BUCKET_NAME"
             value = aws_s3_bucket.cheph.id
+          }
+          env_from {
+            secret_ref {
+              name = "cheph"
+            }
           }
         }
         affinity {
