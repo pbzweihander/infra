@@ -72,6 +72,11 @@ module "mastodon_rds" {
   db_parameter_group_name         = aws_db_parameter_group.mastodon.id
   db_cluster_parameter_group_name = aws_rds_cluster_parameter_group.mastodon.id
 
+  serverlessv2_scaling_configuration = {
+    min_capacity = 0.5
+    max_capacity = 10
+  }
+
   instance_class = "db.t4g.medium"
   instances = {
     three = {}
