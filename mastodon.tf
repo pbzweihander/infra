@@ -52,9 +52,9 @@ module "mastodon_rds" {
   version = "~> 7.6.0"
 
   name              = "mastodon"
-  engine            = data.aws_rds_engine_version.aurora_postgresql_14_4.engine
+  engine            = data.aws_rds_engine_version.aurora_postgresql_14_5.engine
   engine_mode       = "provisioned"
-  engine_version    = data.aws_rds_engine_version.aurora_postgresql_14_4.version
+  engine_version    = data.aws_rds_engine_version.aurora_postgresql_14_5.version
   storage_encrypted = true
 
   database_name          = "mastodon"
