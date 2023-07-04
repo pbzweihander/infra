@@ -1,0 +1,39 @@
+url: ""
+
+web:
+  replicaCount: 1
+
+  image:
+    repository: okteto.dev/misskey
+    pullPolicy: IfNotPresent
+    tag: ""
+
+  port: 3000
+
+  resources: {}
+
+  service:
+    type: ClusterIP
+    port: 80
+
+ingress:
+  enabled: false
+  annotations: {}
+  className:
+  hosts: []
+  tls:
+
+serviceAccount:
+  annotations: {}
+
+database:
+  host: ""
+  port: 5432
+  database: ""
+  username: ""
+  password: ""
+
+redis:
+  host: ""
+  port: 6379
+  password: ""
