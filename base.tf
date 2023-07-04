@@ -49,6 +49,11 @@ terraform {
       source  = "hashicorp/random"
       version = "~> 3.4.3"
     }
+
+    cloudflare = {
+      source  = "cloudflare/cloudflare"
+      version = "4.9.0"
+    }
   }
 }
 
@@ -85,6 +90,10 @@ provider "kubectl" {
   cluster_ca_certificate = base64decode(module.strike_witches_eks.eks_cluster_certificate_authority_data)
   token                  = module.strike_witches_eks.eks_cluster_auth_token
   load_config_file       = false
+}
+
+provider "cloudflare" {
+  api_token = var.cloudflare_api_token
 }
 
 data "aws_region" "current" {}
