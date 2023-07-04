@@ -4,7 +4,7 @@ locals {
 
 module "strike_witches_vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 3.18.0"
+  version = "~> 5.0.0"
 
   name = local.strike_witches_name
   cidr = "10.0.0.0/16"
@@ -44,6 +44,8 @@ module "strike_witches_vpc" {
     "kubernetes.io/cluster/${local.strike_witches_name}" = "shared"
     "kubernetes.io/role/internal-elb"                    = 1
   }
+
+  map_public_ip_on_launch = true
 }
 
 resource "aws_acm_certificate" "wildcard_strike_witches_dev" {
