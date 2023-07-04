@@ -119,4 +119,7 @@ module "strike_witches_eks" {
       subnet_ids     = [module.strike_witches_vpc.private_subnets[2]]
     }
   }
+
+  cloudflare_api_token       = var.cloudflare_api_token
+  cloudflare_managed_domains = []
 }

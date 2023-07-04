@@ -25,3 +25,12 @@ variable "eks_managed_node_group_defaults" {
 variable "eks_managed_node_groups" {
   type = any
 }
+
+variable "cloudflare_managed_domains" {
+  type = list(string)
+}
+
+variable "cloudflare_api_token" {
+  type      = string
+  sensitive = true
+}
