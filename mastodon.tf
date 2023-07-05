@@ -299,7 +299,7 @@ resource "helm_release" "mastodon" {
         }
       }
       sidekiq = {
-        replicaCount = 2
+        replicaCount = 1
         affinity = {
           podAntiAffinity = {
             preferredDuringSchedulingIgnoredDuringExecution = [
@@ -357,7 +357,7 @@ resource "helm_release" "mastodon" {
         }
       }
       web = {
-        replicaCount = 2
+        replicaCount = 1
         service = {
           annotations = {
             "alb.ingress.kubernetes.io/healthcheck-path" = "/health"
