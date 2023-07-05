@@ -37,7 +37,6 @@ resource "cloudflare_record" "pbzweihander_social_acm_validation" {
   name    = each.value.name
   value   = each.value.record
   type    = each.value.type
-  ttl     = 60
   proxied = false
 }
 
