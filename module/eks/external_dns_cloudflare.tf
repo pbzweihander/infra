@@ -15,6 +15,7 @@ resource "helm_release" "external_dns_cloudflare" {
       provider = "cloudflare"
       cloudflare = {
         apiToken = var.cloudflare_api_token
+        proxied  = false
       }
       rbac = {
         create = true
