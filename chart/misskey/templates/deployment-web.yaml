@@ -45,9 +45,11 @@ spec:
             path: docker.env
       affinity:
         podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-          - labelSelector:
-              matchLabels:
-                {{- include "misskey.selectorLabels" . | nindent 16 }}
-                app.kubernetes.io/component: web
-            topologyKey: topology.kubernetes.io/zone
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  {{- include "misskey.selectorLabels" . | nindent 18 }}
+                  app.kubernetes.io/component: web
+              topologyKey: topology.kubernetes.io/zone
+            weight: 100
