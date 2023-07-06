@@ -253,12 +253,12 @@ resource "helm_release" "misskey" {
       }
       resources = {
         requests = {
-          cpu    = "100m"
-          memory = "512Mi"
+          cpu    = "300m"
+          memory = "1Gi"
         }
         limits = {
           cpu    = "1000m"
-          memory = "1.5Gi"
+          memory = "2Gi"
         }
       }
     }
