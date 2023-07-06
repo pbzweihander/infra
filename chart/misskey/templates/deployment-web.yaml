@@ -43,13 +43,11 @@ spec:
             path: default.yml
           - key: envfile
             path: docker.env
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - podAffinityTerm:
-              labelSelector:
-                matchLabels:
-                  {{- include "misskey.selectorLabels" . | nindent 18 }}
-                  app.kubernetes.io/component: web
-              topologyKey: topology.kubernetes.io/zone
-            weight: 100
+      topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: topology.kubernetes.io/zone
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            {{- include "misskey.selectorLabels" . | nindent 12 }}
+            app.kubernetes.io/component: web
