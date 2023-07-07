@@ -51,3 +51,10 @@ spec:
           matchLabels:
             {{- include "misskey.selectorLabels" . | nindent 12 }}
             app.kubernetes.io/component: web
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            {{- include "misskey.selectorLabels" . | nindent 12 }}
+            app.kubernetes.io/component: web
