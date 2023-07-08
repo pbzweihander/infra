@@ -208,6 +208,10 @@ resource "aws_cloudfront_distribution" "misskey" {
   origin {
     origin_id   = local.misskey_s3_origin_id
     domain_name = aws_s3_bucket.misskey.bucket_regional_domain_name
+
+    s3_origin_config {
+      origin_access_identity = aws_cloudfront_origin_access_identity.identity.cloudfront_access_identity_path
+    }
   }
 
   default_cache_behavior {
@@ -244,6 +248,36 @@ resource "aws_cloudfront_distribution" "misskey" {
   }
 }
 
+data "aws_iam_policy_document" "misskey_s3_bucket" {
+  statement {
+    actions   = ["s3:GetObject"]
+    resources = ["${aws_s3_bucket.misskey.arn}/*"]
+    principals {
+      type        = "Service"
+      identifiers = ["cloudfront.amazonaws.com"]
+    }
+    condition {
+      test     = "StringEquals"
+      variable = "AWS:SourceArn"
+      values   = [aws_cloudfront_distribution.misskey.arn]
+    }
+  }
+
+  statement {
+    actions   = ["s3:GetObject"]
+    resources = ["${aws_s3_bucket.misskey.arn}/*"]
+    principals {
+      type        = "AWS"
+      identifiers = [aws_cloudfront_origin_access_identity.identity.iam_arn]
+    }
+  }
+}
+
+resource "aws_s3_bucket_policy" "misskey" {
+  bucket = aws_s3_bucket.misskey.id
+  policy = data.aws_iam_policy_document.misskey_s3_bucket.json
+}
+
 resource "cloudflare_record" "object_pbzweihander_social_cname" {
   zone_id = local.cloudflare_pbzweihander_social_zone_id
   type    = "CNAME"
@@ -251,7 +285,6 @@ resource "cloudflare_record" "object_pbzweihander_social_cname" {
   value   = aws_cloudfront_distribution.misskey.domain_name
   proxied = false
 }
-
 
 data "aws_iam_policy_document" "misskey" {
   statement {
