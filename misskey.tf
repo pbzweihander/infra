@@ -181,10 +181,10 @@ resource "aws_s3_bucket_ownership_controls" "misskey" {
 resource "aws_s3_bucket_public_access_block" "misskey" {
   bucket = aws_s3_bucket.misskey.id
 
-  block_public_acls       = false
-  block_public_policy     = false
-  ignore_public_acls      = false
-  restrict_public_buckets = false
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
 }
 
 resource "aws_s3_bucket_acl" "misskey" {
@@ -194,7 +194,7 @@ resource "aws_s3_bucket_acl" "misskey" {
   ]
 
   bucket = aws_s3_bucket.misskey.id
-  acl    = "public-read"
+  acl    = "private"
 }
 
 resource "aws_cloudfront_distribution" "misskey" {
