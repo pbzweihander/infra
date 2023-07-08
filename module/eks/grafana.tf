@@ -5,4 +5,10 @@ resource "helm_release" "grafana" {
   name             = "grafana"
   namespace        = "grafana"
   create_namespace = true
+
+  values = [yamlencode({
+    persistence = {
+      enabled = true
+    }
+  })]
 }
