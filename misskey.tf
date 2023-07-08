@@ -1,7 +1,12 @@
 locals {
+  cloudflare_pbzweihander_social_zone_id = "9284bb947a1a9efa0eaba04b52aee8de"
+
   misskey_namespace           = "misskey"
   misskey_serviceaccount_name = "misskey"
   misskey_web_domain          = "pbzweihander.social"
+
+  misskey_object_storage_domain = "object.pbzweihander.social"
+  misskey_s3_origin_id          = "misskey-s3-origin"
 
   // https://github.com/hashicorp/terraform-provider-helm/issues/515#issuecomment-1237328171
   misskey_chart_path = "./chart/misskey"
@@ -16,7 +21,18 @@ resource "aws_route53_zone" "pbzweihander_social" {
 }
 
 resource "aws_acm_certificate" "pbzweihander_social" {
-  domain_name       = "pbzweihander.social"
+  domain_name       = local.misskey_web_domain
+  validation_method = "DNS"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_acm_certificate" "object_pbzweihander_social_us_east_1" {
+  provider = aws.us_east_1
+
+  domain_name       = local.misskey_object_storage_domain
   validation_method = "DNS"
 
   lifecycle {
@@ -33,7 +49,23 @@ resource "cloudflare_record" "pbzweihander_social_acm_validation" {
     }
   }
 
-  zone_id = "9284bb947a1a9efa0eaba04b52aee8de"
+  zone_id = local.cloudflare_pbzweihander_social_zone_id
+  name    = each.value.name
+  value   = each.value.record
+  type    = each.value.type
+  proxied = false
+}
+
+resource "cloudflare_record" "object_pbzweihander_social_us_east_1_acm_validation" {
+  for_each = {
+    for dvo in aws_acm_certificate.object_pbzweihander_social_us_east_1.domain_validation_options : dvo.domain_name => {
+      name   = dvo.resource_record_name
+      record = dvo.resource_record_value
+      type   = dvo.resource_record_type
+    }
+  }
+
+  zone_id = local.cloudflare_pbzweihander_social_zone_id
   name    = each.value.name
   value   = each.value.record
   type    = each.value.type
@@ -164,6 +196,62 @@ resource "aws_s3_bucket_acl" "misskey" {
   bucket = aws_s3_bucket.misskey.id
   acl    = "public-read"
 }
+
+resource "aws_cloudfront_distribution" "misskey" {
+  enabled         = true
+  is_ipv6_enabled = true
+
+  aliases = [
+    local.misskey_object_storage_domain
+  ]
+
+  origin {
+    origin_id   = local.misskey_s3_origin_id
+    domain_name = aws_s3_bucket.misskey.bucket_regional_domain_name
+  }
+
+  default_cache_behavior {
+    target_origin_id = local.misskey_s3_origin_id
+
+    allowed_methods = ["GET", "HEAD", "OPTIONS"]
+    cached_methods  = ["GET", "HEAD", "OPTIONS"]
+
+    viewer_protocol_policy = "redirect-to-https"
+    compress               = true
+
+    min_ttl     = 0
+    default_ttl = 86400
+    max_ttl     = 31536000
+
+    forwarded_values {
+      query_string = true
+
+      cookies {
+        forward = "all"
+      }
+    }
+  }
+
+  restrictions {
+    geo_restriction {
+      restriction_type = "none"
+    }
+  }
+
+  viewer_certificate {
+    acm_certificate_arn = aws_acm_certificate.object_pbzweihander_social_us_east_1.arn
+    ssl_support_method  = "sni-only"
+  }
+}
+
+resource "cloudflare_record" "object_pbzweihander_social_cname" {
+  zone_id = local.cloudflare_pbzweihander_social_zone_id
+  type    = "CNAME"
+  name    = local.misskey_object_storage_domain
+  value   = aws_cloudfront_distribution.misskey.domain_name
+  proxied = false
+}
+
 
 data "aws_iam_policy_document" "misskey" {
   statement {
