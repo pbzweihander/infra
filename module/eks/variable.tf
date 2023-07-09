@@ -34,3 +34,8 @@ variable "cloudflare_api_token" {
   type      = string
   sensitive = true
 }
+
+variable "grafana_ingress_host" {
+  type    = string
+  default = ""
+}

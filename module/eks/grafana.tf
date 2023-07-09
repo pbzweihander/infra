@@ -76,9 +76,23 @@ resource "helm_release" "grafana" {
       auth = {
         sigv4_auth_enabled = true
       }
+      server = var.grafana_ingress_host == "" ? null : {
+        root_url = "https://${var.grafana_ingress_host}/"
+      }
     }
     persistence = {
       enabled = true
+    }
+    ingress = var.grafana_ingress_host == "" ? null : {
+      enabled          = true
+      ingressClassName = "alb"
+      annotations = {
+        "alb.ingress.kubernetes.io/scheme"       = "internet-facing"
+        "alb.ingress.kubernetes.io/target-type"  = "ip"
+        "alb.ingress.kubernetes.io/listen-ports" = "[{\"HTTP\": 80}, {\"HTTPS\":443}]"
+        "alb.ingress.kubernetes.io/ssl-redirect" = "443"
+      }
+      hosts = [var.grafana_ingress_host]
     }
   })]
 }

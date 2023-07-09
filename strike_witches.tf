@@ -124,4 +124,6 @@ module "strike_witches_eks" {
   cloudflare_managed_domains = [
     "pbzweihander.social",
   ]
+
+  grafana_ingress_host = "grafana.strike.witches.dev"
 }
