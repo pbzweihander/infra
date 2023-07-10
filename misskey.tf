@@ -418,7 +418,47 @@ resource "helm_release" "misskey" {
       host     = aws_elasticache_replication_group.misskey.primary_endpoint_address
       password = ""
     }
+    meilisearch = {
+      host   = "misskey-meilisearch"
+      port   = 7700
+      apiKey = random_password.misskey_meilisearch_master_key.result
+      ssl    = "false"
+      index  = "misskey"
+    }
     # https://github.com/hashicorp/terraform-provider-helm/issues/515#issuecomment-1237328171
     chartHash = local.misskey_chart_hash
+  })]
+}
+
+resource "random_password" "misskey_meilisearch_master_key" {
+  length = 42
+}
+
+resource "helm_release" "misskey_meilisearch" {
+  provider = helm.strike_witches
+
+  depends_on = [
+    kubernetes_namespace.misskey,
+  ]
+
+  repository = "https://meilisearch.github.io/meilisearch-kubernetes"
+  chart      = "meilisearch"
+  version    = "0.2.2"
+
+  namespace        = local.misskey_namespace
+  name             = "misskey-meilisearch"
+  create_namespace = false
+  wait             = false
+
+  values = [yamlencode({
+    environment = {
+      MEILI_ENV        = "production"
+      MEILI_MASTER_KEY = random_password.misskey_meilisearch_master_key.result
+    }
+    persistence = {
+      enabled      = true
+      size         = "50Gi"
+      storageClass = "gp3"
+    }
   })]
 }
