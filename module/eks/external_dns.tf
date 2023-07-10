@@ -75,6 +75,8 @@ resource "helm_release" "external_dns" {
   name             = "external-dns"
   create_namespace = true
 
+  wait = false
+
   values = [
     yamlencode({
       sources = [

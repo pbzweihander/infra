@@ -66,6 +66,8 @@ resource "helm_release" "grafana" {
   namespace        = local.grafana_namespace
   create_namespace = true
 
+  wait = false
+
   values = [yamlencode({
     serviceAccount = {
       name = local.grafana_serviceaccount_name

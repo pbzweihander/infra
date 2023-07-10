@@ -7,6 +7,8 @@ resource "helm_release" "external_dns_cloudflare" {
   name             = "external-dns"
   create_namespace = true
 
+  wait = false
+
   values = [
     yamlencode({
       sources = [

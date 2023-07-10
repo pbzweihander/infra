@@ -70,6 +70,8 @@ resource "helm_release" "prometheus" {
   namespace        = local.prometheus_namespace
   create_namespace = true
 
+  wait = false
+
   values = [yamlencode({
     serviceAccounts = {
       server = {

@@ -71,6 +71,8 @@ resource "helm_release" "cluster_autoscaler" {
   name             = "cluster-autoscaler"
   create_namespace = true
 
+  wait = false
+
   values = [
     yamlencode({
       cloudProvider = "aws"

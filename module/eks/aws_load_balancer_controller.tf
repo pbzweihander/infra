@@ -71,6 +71,8 @@ resource "helm_release" "aws_load_balancer_controller" {
   name             = "aws-load-balancer-controller"
   create_namespace = true
 
+  wait = false
+
   values = [
     yamlencode({
       clusterName = module.eks.cluster_id

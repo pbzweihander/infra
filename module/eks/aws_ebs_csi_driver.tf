@@ -44,6 +44,8 @@ resource "helm_release" "aws_ebs_csi_driver" {
   name             = "aws-ebs-csi-driver"
   create_namespace = true
 
+  wait = false
+
   values = [yamlencode({
     controller = {
       k8sTagClusterId = module.eks.cluster_id
