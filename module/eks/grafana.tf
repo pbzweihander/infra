@@ -60,6 +60,7 @@ resource "aws_iam_role_policy_attachment" "grafana" {
 resource "helm_release" "grafana" {
   repository = "https://grafana.github.io/helm-charts"
   chart      = "grafana"
+  version    = "6.57.4"
 
   name             = "grafana"
   namespace        = local.grafana_namespace

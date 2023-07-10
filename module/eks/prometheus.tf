@@ -64,6 +64,7 @@ resource "aws_iam_role_policy_attachment" "prometheus" {
 resource "helm_release" "prometheus" {
   repository = "https://prometheus-community.github.io/helm-charts"
   chart      = "prometheus"
+  version    = "23.0.0"
 
   name             = "prometheus"
   namespace        = local.prometheus_namespace
