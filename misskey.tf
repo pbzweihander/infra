@@ -115,6 +115,7 @@ module "misskey_rds" {
     1 = {}
   }
 }
+
 resource "aws_security_group" "misskey_redis" {
   name_prefix = "misskey-redis-"
   vpc_id      = module.strike_witches_vpc.vpc_id
