@@ -54,6 +54,11 @@ terraform {
       source  = "cloudflare/cloudflare"
       version = "4.9.0"
     }
+
+    bcrypt = {
+      source  = "viktorradnai/bcrypt"
+      version = "0.1.2"
+    }
   }
 }
 

@@ -3,6 +3,10 @@ resource "random_password" "argocd_server_admin_password" {
   special = false
 }
 
+resource "bcrypt_hash" "argocd_server_admin_password" {
+  cleartext = random_password.argocd_server_admin_password.result
+}
+
 resource "helm_release" "argocd" {
   repository = "https://argoproj.github.io/argo-helm"
   chart      = "argo-cd"
@@ -46,7 +50,7 @@ resource "helm_release" "argocd" {
         "server.insecure" = true
       }
       secret = {
-        argocdServerAdminPassword = bcrypt(random_password.argocd_server_admin_password.result)
+        argocdServerAdminPassword = bcrypt_hash.argocd_server_admin_password.id
       }
     }
   })]

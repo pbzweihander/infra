@@ -27,6 +27,10 @@ terraform {
     kubectl = {
       source = "gavinbunney/kubectl"
     }
+
+    bcrypt = {
+      source = "viktorradnai/bcrypt"
+    }
   }
 }
 
