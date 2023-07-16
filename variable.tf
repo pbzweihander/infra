@@ -3,16 +3,6 @@ variable "gmail_smtp_password" {
   sensitive = true
 }
 
-variable "mastodon_vapid_private_key" {
-  type      = string
-  sensitive = true
-}
-
-variable "mastodon_vapid_public_key" {
-  type      = string
-  sensitive = true
-}
-
 variable "cheph_github_client_id" {
   type      = string
   sensitive = true
