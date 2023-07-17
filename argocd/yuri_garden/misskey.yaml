@@ -38,7 +38,6 @@ spec:
             alb.ingress.kubernetes.io/target-group-attributes: stickiness.enabled=true,stickiness.lb_cookie.duration_seconds=60
             alb.ingress.kubernetes.io/listen-ports: "[{\"HTTP\": 80}, {\"HTTPS\":443}]"
             alb.ingress.kubernetes.io/ssl-redirect: "443"
-            alb.ingress.kubernetes.io/inbound-cidrs: 120.50.94.126/32
           hosts:
           - host: yuri.garden
             paths:
