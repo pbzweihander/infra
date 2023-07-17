@@ -123,6 +123,7 @@ module "strike_witches_eks" {
   cloudflare_api_token = var.cloudflare_api_token
   cloudflare_managed_domains = [
     "pbzweihander.social",
+    "yuri.garden",
   ]
 
   grafana_ingress_host = "grafana.strike.witches.dev"
