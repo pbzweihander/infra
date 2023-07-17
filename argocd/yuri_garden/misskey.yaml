@@ -16,7 +16,7 @@ spec:
     targetRevision: HEAD
     helm:
       values: |
-        url: yuri.garden
+        url: https://yuri.garden
         web:
           replicaCount: 2
           image:
