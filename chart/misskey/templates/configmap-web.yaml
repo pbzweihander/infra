@@ -20,7 +20,7 @@ data:
     meilisearch:
       host: {{ .Values.meilisearch.host }}
       port: {{ .Values.meilisearch.port }}
-      apiKey: {{ .Values.meilisearch.apiKey }}
+      apiKey: "{{ .Values.meilisearch.apiKey }}"
       ssl: {{ .Values.meilisearch.ssl }}
       index: {{ .Values.meilisearch.index }}
     id: 'aid'
