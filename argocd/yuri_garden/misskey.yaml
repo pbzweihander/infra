@@ -1,0 +1,67 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  namespace: argocd
+  name: yuri-garden-misskey
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: yuri-garden
+  destination:
+    namespace: yuri-garden
+    server: https://kubernetes.default.svc
+  source:
+    repoURL: https://github.com/pbzweihander/infra.git
+    path: chart/misskey
+    targetRevision: HEAD
+    helm:
+      values: |
+        url: yuri.garden
+        web:
+          replicaCount: 2
+          image:
+            repository: ghcr.io/pbzweihander/misskey
+            tag: 13.13.2-pbzweihander.0
+          resources:
+            requests:
+              cpu: 300m
+              memory: 2Gi
+            limits:
+              cpu: 1000m
+              memory: 3Gi
+        ingress:
+          enabled: true
+          className: alb
+          annotations:
+            alb.ingress.kubernetes.io/scheme: internet-facing
+            alb.ingress.kubernetes.io/target-type: ip
+            alb.ingress.kubernetes.io/target-group-attributes: stickiness.enabled=true,stickiness.lb_cookie.duration_seconds=60
+            alb.ingress.kubernetes.io/listen-ports: "[{\"HTTP\": 80}, {\"HTTPS\":443}]"
+            alb.ingress.kubernetes.io/ssl-redirect: "443"
+            alb.ingress.kubernetes.io/inbound-cidrs: 120.50.94.126/32
+          hosts:
+          - host: yuri.garden
+            paths:
+            - path: "/"
+              pathType: Prefix
+          tls: false
+        database:
+          host: "${database.host}"
+          port: "${database.port}"
+          database: "${database.database}"
+          username: "${database.username}"
+          password: "${database.password}"
+        redis:
+          host: "${redis.host}"
+          password: "${redis.password}"
+        meilisearch:
+          host: yuri-garden-meilisearch
+          port: 7700
+          apiKey: "${meilisearch.apiKey}"
+          ssl: "false"
+          index: misskey
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
