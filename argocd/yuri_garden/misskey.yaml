@@ -21,7 +21,7 @@ spec:
           replicaCount: 4
           image:
             repository: ghcr.io/pbzweihander/misskey
-            tag: 13.14.0-pbzweihander.0
+            tag: 13.14.0-pbzweihander.1
           resources:
             requests:
               cpu: 300m
