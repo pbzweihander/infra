@@ -18,6 +18,33 @@ data "aws_iam_policy_document" "grafana" {
 
     effect = "Allow"
   }
+
+  statement {
+    actions = [
+      "cloudwatch:DescribeAlarmsForMetric",
+      "cloudwatch:DescribeAlarmHistory",
+      "cloudwatch:DescribeAlarms",
+      "cloudwatch:ListMetrics",
+      "cloudwatch:GetMetricData",
+      "cloudwatch:GetInsightRuleReport",
+      "logs:DescribeLogGroups",
+      "logs:GetLogGroupFields",
+      "logs:StartQuery",
+      "logs:StopQuery",
+      "logs:GetQueryResults",
+      "logs:GetLogEvents",
+      "ec2:DescribeTags",
+      "ec2:DescribeInstances",
+      "ec2:DescribeRegions",
+      "tag:GetResources",
+    ]
+
+    resources = [
+      "*",
+    ]
+
+    effect = "Allow"
+  }
 }
 
 resource "aws_iam_policy" "grafana" {
