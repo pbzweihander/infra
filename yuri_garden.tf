@@ -28,6 +28,36 @@ resource "cloudflare_record" "yuri_garden_acm_validation" {
   proxied = false
 }
 
+resource "aws_ses_domain_identity" "yuri_garden" {
+  domain = "yuri.garden"
+}
+
+resource "cloudflare_record" "yuri_garden_ses_verification" {
+  zone_id = data.cloudflare_zone.yuri_garden.id
+  name    = "_amazonses"
+  type    = "TXT"
+  value   = aws_ses_domain_identity.yuri_garden.verification_token
+  proxied = false
+}
+
+resource "aws_ses_domain_identity_verification" "yuri_garden" {
+  domain     = aws_ses_domain_identity.yuri_garden.id
+  depends_on = [cloudflare_record.yuri_garden_ses_verification]
+}
+
+resource "aws_ses_domain_dkim" "yuri_garden" {
+  domain = aws_ses_domain_identity.yuri_garden.domain
+}
+
+resource "cloudflare_record" "yuri_garden_ses_dkim" {
+  count   = 3
+  zone_id = data.cloudflare_zone.yuri_garden.id
+  name    = format("%s._domainkey.%s", element(aws_ses_domain_dkim.yuri_garden.dkim_tokens, count.index), aws_ses_domain_identity.yuri_garden.domain)
+  type    = "CNAME"
+  value   = format("%s.dkim.amazonses.com", element(aws_ses_domain_dkim.yuri_garden.dkim_tokens, count.index))
+  proxied = false
+}
+
 resource "random_password" "yuri_garden_rds_master_password" {
   length  = 42
   special = false
