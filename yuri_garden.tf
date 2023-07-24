@@ -58,6 +58,34 @@ resource "cloudflare_record" "yuri_garden_ses_dkim" {
   proxied = false
 }
 
+data "aws_iam_policy_document" "yuri_garden_ses" {
+  statement {
+    actions = [
+      "ses:SendRawEmail",
+    ]
+
+    resources = [
+      aws_ses_domain_identity.yuri_garden.arn,
+    ]
+
+    effect = "Allow"
+  }
+}
+
+resource "aws_iam_policy" "yuri_garden_ses" {
+  name_prefix = "yuri-garden-ses-"
+  policy      = data.aws_iam_policy_document.yuri_garden_ses.json
+}
+
+resource "aws_iam_user" "yuri_garden_ses" {
+  name = "yuri-garden-ses"
+}
+
+resource "aws_iam_user_policy_attachment" "yuri_garden_ses" {
+  user       = aws_iam_user.yuri_garden_ses.name
+  policy_arn = aws_iam_policy.yuri_garden_ses.arn
+}
+
 resource "random_password" "yuri_garden_rds_master_password" {
   length  = 42
   special = false
