@@ -1,0 +1,56 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  namespace: argocd
+  name: yuri-garden-baekyae-contest
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: yuri-garden
+  destination:
+    namespace: yuri-garden
+    server: https://kubernetes.default.svc
+  source:
+    repoURL: https://github.com/pbzweihander/contcont.git
+    path: helm
+    targetRevision: HEAD
+    helm:
+      values: |
+        image:
+          pullPolicy: Always
+          tag: latest
+        ingress:
+          enabled: true
+          className: alb
+          annotations:
+            alb.ingress.kubernetes.io/scheme: internet-facing
+            alb.ingress.kubernetes.io/target-type: ip
+            alb.ingress.kubernetes.io/listen-ports: "[{\"HTTP\": 80}, {\"HTTPS\":443}]"
+            alb.ingress.kubernetes.io/ssl-redirect: "443"
+          hosts:
+          - host: baekyae.contest.yuri.garden
+            paths:
+            - path: "/"
+              pathType: Prefix
+          tls: false
+        config:
+          baseUrl: https://baekyae.contest.yuri.garden
+          contestName: 백얘 컨테스트
+          jwtSecret: "${jwtSecret}"
+          submission:
+            openAt: 2023-07-28T00:00:00+09:00
+            closeAt: 2023-08-14T00:00:00+09:00
+          voting:
+            openAt: 2023-07-28T00:00:00+09:00
+            closeAt: 2023-08-14T00:00:00+09:00
+          enabled:
+            literature: true
+            art: false
+        postgresql:
+          auth:
+            postgresPassword: "${postgresPassword}"
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false

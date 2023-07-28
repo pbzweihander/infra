@@ -255,3 +255,52 @@ resource "kubectl_manifest" "yuri_garden_misskey" {
     },
   )
 }
+
+resource "aws_acm_certificate" "wildcard_contest_yuri_garden" {
+  domain_name       = "*.contest.yuri.garden"
+  validation_method = "DNS"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "cloudflare_record" "wildcard_contest_yuri_garden_acm_validation" {
+  for_each = {
+    for dvo in aws_acm_certificate.wildcard_contest_yuri_garden.domain_validation_options : dvo.domain_name => {
+      name   = dvo.resource_record_name
+      record = dvo.resource_record_value
+      type   = dvo.resource_record_type
+    }
+  }
+
+  zone_id = data.cloudflare_zone.yuri_garden.id
+  name    = each.value.name
+  value   = each.value.record
+  type    = each.value.type
+  proxied = false
+}
+
+resource "random_password" "baekyae_contest_jwt_secret" {
+  length = 42
+}
+
+resource "random_password" "baekyae_contest_postgres_password" {
+  length = 42
+}
+
+resource "kubectl_manifest" "baekyae_contest" {
+  provider = kubectl.strike_witches
+
+  depends_on = [
+    kubectl_manifest.yuri_garden_project,
+  ]
+
+  yaml_body = templatefile(
+    "argocd/yuri_garden/baekyae_contest.yaml",
+    {
+      jwtSecret        = random_password.baekyae_contest_jwt_secret.result
+      postgresPassword = random_password.baekyae_contest_postgres_password.result
+    },
+  )
+}
