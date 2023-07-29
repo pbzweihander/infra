@@ -300,6 +300,7 @@ resource "kubectl_manifest" "baekyae_contest" {
     "argocd/yuri_garden/baekyae_contest.yaml",
     {
       jwtSecret        = random_password.baekyae_contest_jwt_secret.result
+      misskeyApiKey    = var.yuri_garden_contest_misskey_api_key
       postgresPassword = random_password.baekyae_contest_postgres_password.result
     },
   )

@@ -46,6 +46,9 @@ spec:
           enabled:
             literature: true
             art: false
+          misskey:
+            baseUrl: https://yuri.garden
+            apiKey: "${misskeyApiKey}"
         postgresql:
           auth:
             postgresPassword: "${postgresPassword}"

@@ -37,3 +37,8 @@ variable "cloudflare_api_token" {
   type      = string
   sensitive = true
 }
+
+variable "yuri_garden_contest_misskey_api_key" {
+  type      = string
+  sensitive = true
+}
