@@ -78,7 +78,7 @@ module "strike_witches_eks" {
   source = "./module/eks"
 
   cluster_name       = local.strike_witches_name
-  kubernetes_version = "1.23"
+  kubernetes_version = "1.25"
 
   vpc_id     = module.strike_witches_vpc.vpc_id
   subnet_ids = module.strike_witches_vpc.private_subnets
