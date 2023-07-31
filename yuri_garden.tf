@@ -305,3 +305,28 @@ resource "kubectl_manifest" "baekyae_contest" {
     },
   )
 }
+
+resource "random_password" "yurigarden_contest_jwt_secret" {
+  length = 42
+}
+
+resource "random_password" "yurigarden_contest_postgres_password" {
+  length = 42
+}
+
+resource "kubectl_manifest" "yurigarden_contest" {
+  provider = kubectl.strike_witches
+
+  depends_on = [
+    kubectl_manifest.yuri_garden_project,
+  ]
+
+  yaml_body = templatefile(
+    "argocd/yuri_garden/yurigarden_contest.yaml",
+    {
+      jwtSecret        = random_password.yurigarden_contest_jwt_secret.result
+      misskeyApiKey    = var.yuri_garden_contest_misskey_api_key
+      postgresPassword = random_password.yurigarden_contest_postgres_password.result
+    },
+  )
+}
