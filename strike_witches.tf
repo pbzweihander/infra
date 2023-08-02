@@ -43,6 +43,7 @@ module "strike_witches_vpc" {
   private_subnet_tags = {
     "kubernetes.io/cluster/${local.strike_witches_name}" = "shared"
     "kubernetes.io/role/internal-elb"                    = 1
+    "karpenter.sh/discovery"                             = local.strike_witches_name
   }
 
   map_public_ip_on_launch = true
@@ -99,24 +100,34 @@ module "strike_witches_eks" {
     disk_size = 50
 
     min_size = 1
-    max_size = 10
+    max_size = 1
   }
 
   eks_managed_node_groups = {
     t3a_medium_bottlerocket_a = {
-      name           = "sw-t3a-med-br-a"
+      name           = "sw-t3a-sma-br-a"
       ami_type       = "BOTTLEROCKET_x86_64"
       platform       = "bottlerocket"
-      instance_types = ["t3a.medium"]
+      instance_types = ["t3a.small"]
       subnet_ids     = [module.strike_witches_vpc.private_subnets[0]]
+
+      iam_role_additional_policies = [
+        # Required by Karpenter
+        "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonSSMManagedInstanceCore"
+      ]
     }
     # ap-northeast-1c does not have t3a instances.
     t3a_medium_bottlerocket_d = {
-      name           = "sw-t3a-med-br-d"
+      name           = "sw-t3a-sma-br-d"
       ami_type       = "BOTTLEROCKET_x86_64"
       platform       = "bottlerocket"
-      instance_types = ["t3a.medium"]
+      instance_types = ["t3a.small"]
       subnet_ids     = [module.strike_witches_vpc.private_subnets[2]]
+
+      iam_role_additional_policies = [
+        # Required by Karpenter
+        "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonSSMManagedInstanceCore"
+      ]
     }
   }
 

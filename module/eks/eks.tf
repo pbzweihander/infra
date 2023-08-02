@@ -45,10 +45,22 @@ module "eks" {
       cidr_blocks      = ["0.0.0.0/0"]
       ipv6_cidr_blocks = ["::/0"]
     }
+    ingress_karpenter_webhook_tcp = {
+      description                   = "Control plane invoke Karpenter webhook"
+      protocol                      = "tcp"
+      from_port                     = 8443
+      to_port                       = 8443
+      type                          = "ingress"
+      source_cluster_security_group = true
+    }
   }
 
   eks_managed_node_group_defaults = var.eks_managed_node_group_defaults
   eks_managed_node_groups         = var.eks_managed_node_groups
+
+  tags = {
+    "karpenter.sh/discovery" = var.cluster_name
+  }
 }
 
 data "aws_eks_cluster_auth" "this" {
