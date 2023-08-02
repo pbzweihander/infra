@@ -1,0 +1,80 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  namespace: argocd
+  name: aquarium-yuri-garden-mastodon
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: aquarium-yuri-garden
+  destination:
+    namespace: aquarium-yuri-garden
+    server: https://kubernetes.default.svc
+  source:
+    repoURL: https://github.com/pbzweihander/mastodon-chart.git
+    path: .
+    targetRevision: HEAD
+    helm:
+      values: |
+        image:
+          repository: ghcr.io/pbzweihander/mastodon
+          tag: 4.1.5-aquariumyurigarden.0
+        mastodon:
+          locale: ko
+          local_domain: aquarium.yuri.garden
+          s3:
+            enabled: true
+            access_key: "${r2.access_key}"
+            access_secret: "${r2.access_secret}"
+            bucket: aquarium-yuri-garden
+            endpoint: "${r2.endpoint}"
+            alias_host: object.aquarium.yuri.garden/aquarium-yuri-garden
+          secrets:
+            secret_key_base: "${secrets.secret_key_base}"
+            otp_secret: "${secrets.otp_secret}"
+            vapid:
+              private_key: "${secrets.vapid.private_key}"
+              public_key: "${secrets.vapid.public_key}"
+          smtp:
+            from_address: 백합연못 <noreply@yuri.garden>
+            server: email-smtp.ap-northeast-1.amazonaws.com
+            port: 465
+            tls: true
+            login: "${smtp.login}"
+            password: "${smtp.password}"
+          web:
+            serviceAnnotations:
+              service.beta.kubernetes.io/aws-load-balancer-healthcheck-path: /health
+          streaming:
+            serviceAnnotations:
+              service.beta.kubernetes.io/aws-load-balancer-healthcheck-path: /api/v1/streaming/health
+        ingress:
+          enabled: true
+          annotations:
+            alb.ingress.kubernetes.io/scheme: internet-facing
+            alb.ingress.kubernetes.io/target-type: ip
+            alb.ingress.kubernetes.io/listen-ports: "[{\"HTTP\": 80}, {\"HTTPS\":443}]"
+            alb.ingress.kubernetes.io/ssl-redirect: "443"
+          ingressClassName: alb          
+          hosts:
+          - host: aquarium.yuri.garden
+            paths:
+            - path: "/"
+          tls: {}
+        elasticsearch:
+          enabled: false
+        postgresql:
+          enabled: false
+          postgresqlHostname: "${database.host}"
+          postgresqlPort: 5432
+          auth:
+            database: "${database.database}"
+            username: "${database.username}"
+            password: "${database.password}"
+        redis:
+          enabled: true
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false

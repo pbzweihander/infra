@@ -42,3 +42,37 @@ variable "yuri_garden_contest_misskey_api_key" {
   type      = string
   sensitive = true
 }
+
+variable "aquarium_yuri_garden_r2_access_key" {
+  type      = string
+  sensitive = true
+}
+
+variable "aquarium_yuri_garden_r2_access_secret" {
+  type      = string
+  sensitive = true
+}
+
+variable "aquarium_yuri_garden_r2_endpoint" {
+  type = string
+}
+
+variable "aquarium_yuri_garden_vapid_private_key" {
+  type      = string
+  sensitive = true
+}
+
+variable "aquarium_yuri_garden_vapid_public_key" {
+  type      = string
+  sensitive = true
+}
+
+variable "aquarium_yuri_garden_smtp_login" {
+  type      = string
+  sensitive = true
+}
+
+variable "aquarium_yuri_garden_smtp_password" {
+  type      = string
+  sensitive = true
+}
