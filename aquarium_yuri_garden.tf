@@ -132,6 +132,7 @@ resource "kubectl_manifest" "aquarium_yuri_garden_mastodon" {
         access_key    = var.aquarium_yuri_garden_r2_access_key
         access_secret = var.aquarium_yuri_garden_r2_access_secret
         endpoint      = var.aquarium_yuri_garden_r2_endpoint
+        hostname      = trimprefix(var.aquarium_yuri_garden_r2_endpoint, "https://")
       }
       secrets = {
         secret_key_base = random_password.aquarium_yuri_garden_secret_key_base.result

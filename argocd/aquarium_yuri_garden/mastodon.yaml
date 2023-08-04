@@ -28,6 +28,7 @@ spec:
             access_secret: "${r2.access_secret}"
             bucket: aquarium-yuri-garden
             endpoint: "${r2.endpoint}"
+            hostname: "${r2.hostname}"
             alias_host: object.aquarium.yuri.garden/aquarium-yuri-garden
           secrets:
             secret_key_base: "${secrets.secret_key_base}"
