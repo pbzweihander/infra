@@ -44,10 +44,10 @@ spec:
             password: "${smtp.password}"
           web:
             serviceAnnotations:
-              service.beta.kubernetes.io/aws-load-balancer-healthcheck-path: /health
+              alb.ingress.kubernetes.io/healthcheck-path: /health
           streaming:
             serviceAnnotations:
-              service.beta.kubernetes.io/aws-load-balancer-healthcheck-path: /api/v1/streaming/health
+              alb.ingress.kubernetes.io/healthcheck-path: /api/v1/streaming/health
         ingress:
           enabled: true
           annotations:
