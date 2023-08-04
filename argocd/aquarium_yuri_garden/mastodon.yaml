@@ -76,8 +76,3 @@ spec:
           enabled: true
           auth:
             password: "${redis.password}"
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-      allowEmpty: false
