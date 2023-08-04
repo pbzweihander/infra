@@ -172,6 +172,9 @@ resource "kubectl_manifest" "karpenter_provisioner" {
       - key: "karpenter.k8s.aws/instance-family"
         operator: In
         values: ["t3a"]
+      - key: "topology.kubernetes.io/zone"
+        operator: In
+        values: ["ap-northeast-1a", "ap-northeast-1d"]
       - key: karpenter.sh/capacity-type
         operator: In
         values: ["spot"]
