@@ -166,15 +166,19 @@ resource "kubectl_manifest" "karpenter_provisioner" {
       name: default
     spec:
       requirements:
+      - key: "karpenter.k8s.aws/instance-category"
+        operator: In
+        values: ["t", "c", "m", "r"]
       - key: karpenter.sh/capacity-type
         operator: In
         values: ["spot"]
       limits:
         resources:
           cpu: 1000
+      consolidation:
+        enabled: true
       providerRef:
         name: default
-      ttlSecondsAfterEmpty: 30
   YAML
 
   depends_on = [
