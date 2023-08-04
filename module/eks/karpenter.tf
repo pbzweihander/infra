@@ -168,7 +168,10 @@ resource "kubectl_manifest" "karpenter_provisioner" {
       requirements:
       - key: "karpenter.k8s.aws/instance-category"
         operator: In
-        values: ["t", "c", "m", "r"]
+        values: ["t"]
+      - key: "karpenter.k8s.aws/instance-family"
+        operator: In
+        values: ["t3a"]
       - key: karpenter.sh/capacity-type
         operator: In
         values: ["spot"]
