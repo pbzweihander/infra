@@ -113,6 +113,11 @@ resource "random_password" "aquarium_yuri_garden_otp_secret" {
   special = false
 }
 
+resource "random_password" "aquarium_yuri_garden_redis_password" {
+  length  = 42
+  special = false
+}
+
 resource "kubectl_manifest" "aquarium_yuri_garden_mastodon" {
   provider = kubectl.strike_witches
 
@@ -145,6 +150,9 @@ resource "kubectl_manifest" "aquarium_yuri_garden_mastodon" {
         database = module.aquarium_yuri_garden_rds.db_instance_name
         username = module.aquarium_yuri_garden_rds.db_instance_username
         password = random_password.aquarium_yuri_garden_rds_password.result
+      }
+      redis = {
+        password = random_password.aquarium_yuri_garden_redis_password.result
       }
     },
   )

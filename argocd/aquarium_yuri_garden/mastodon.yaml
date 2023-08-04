@@ -73,6 +73,8 @@ spec:
             password: "${database.password}"
         redis:
           enabled: true
+          auth:
+            password: "${redis.password}"
   syncPolicy:
     automated:
       prune: true
