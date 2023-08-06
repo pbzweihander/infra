@@ -172,8 +172,8 @@ resource "helm_release" "misskey" {
     web = {
       replicaCount = 2
       image = {
-        repository = "ghcr.io/tirr-c/misskey"
-        tag        = "13.14.2"
+        repository = "ghcr.io/pbzweihander/misskey"
+        tag        = "13.14.2-pbzweihander.0"
       }
       resources = {
         requests = {
