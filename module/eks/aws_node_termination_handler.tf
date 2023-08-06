@@ -8,4 +8,8 @@ resource "helm_release" "aws_node_termination_handler" {
   create_namespace = true
 
   wait = false
+
+  values = [yamlencode({
+    webhookURL = var.notification_slack_webhook_url
+  })]
 }

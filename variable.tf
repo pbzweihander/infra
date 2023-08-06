@@ -76,3 +76,8 @@ variable "aquarium_yuri_garden_smtp_password" {
   type      = string
   sensitive = true
 }
+
+variable "notification_slack_webhook_url" {
+  type      = string
+  sensitive = true
+}

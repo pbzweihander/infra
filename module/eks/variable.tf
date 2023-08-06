@@ -44,3 +44,8 @@ variable "argocd_ingress_host" {
   type    = string
   default = ""
 }
+
+variable "notification_slack_webhook_url" {
+  type      = string
+  sensitive = true
+}

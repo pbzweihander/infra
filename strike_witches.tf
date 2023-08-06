@@ -139,4 +139,6 @@ module "strike_witches_eks" {
 
   grafana_ingress_host = "grafana.strike.witches.dev"
   argocd_ingress_host  = "argocd.strike.witches.dev"
+
+  notification_slack_webhook_url = var.notification_slack_webhook_url
 }
