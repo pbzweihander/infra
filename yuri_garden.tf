@@ -114,8 +114,8 @@ module "yuri_garden_rds" {
   }
 
   preferred_maintenance_window = "sat:20:00-sat:21:00"
-
-  skip_final_snapshot = true
+  preferred_backup_window      = "19:00-20:00"
+  backup_retention_period      = 7
 
   create_security_group             = true
   create_db_subnet_group            = true

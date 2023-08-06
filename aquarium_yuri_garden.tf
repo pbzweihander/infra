@@ -71,9 +71,10 @@ module "aquarium_yuri_garden_rds" {
   create_db_subnet_group    = true
   create_db_parameter_group = true
 
-  maintenance_window = "sat:20:00-sat:21:00"
-
-  skip_final_snapshot = true
+  maintenance_window       = "sat:20:00-sat:21:00"
+  backup_window            = "19:00-20:00"
+  backup_retention_period  = 7
+  delete_automated_backups = false
 }
 
 resource "cloudflare_r2_bucket" "aquarium_yuri_garden" {
