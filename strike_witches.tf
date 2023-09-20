@@ -141,4 +141,10 @@ module "strike_witches_eks" {
   argocd_ingress_host  = "argocd.strike.witches.dev"
 
   notification_slack_webhook_url = var.notification_slack_webhook_url
+
+  grafana_cloud_prometheus_host     = var.grafana_cloud_prometheus_host
+  grafana_cloud_prometheus_username = var.grafana_cloud_prometheus_username
+  grafana_cloud_loki_host           = var.grafana_cloud_loki_host
+  grafana_cloud_loki_username       = var.grafana_cloud_loki_username
+  grafana_cloud_token               = var.grafana_cloud_token
 }

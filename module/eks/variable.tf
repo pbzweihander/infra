@@ -49,3 +49,26 @@ variable "notification_slack_webhook_url" {
   type      = string
   sensitive = true
 }
+
+variable "grafana_cloud_prometheus_host" {
+  type = string
+}
+
+variable "grafana_cloud_prometheus_username" {
+  type      = string
+  sensitive = true
+}
+
+variable "grafana_cloud_loki_host" {
+  type = string
+}
+
+variable "grafana_cloud_loki_username" {
+  type      = string
+  sensitive = true
+}
+
+variable "grafana_cloud_token" {
+  type      = string
+  sensitive = true
+}
