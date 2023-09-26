@@ -18,16 +18,16 @@ spec:
       values: |
         url: https://yuri.garden
         web:
-          replicaCount: 4
+          replicaCount: 3
           image:
             repository: ghcr.io/pbzweihander/misskey
             tag: 2023.9.0-yurigarden.1
           resources:
             requests:
-              cpu: 200m
+              cpu: 100m
               memory: 1Gi
             limits:
-              cpu: 6000m
+              cpu: 200m
               memory: 2Gi
         ingress:
           enabled: true
