@@ -58,10 +58,10 @@ spec:
               alb.ingress.kubernetes.io/healthcheck-path: /api/v1/streaming/health
             resources:
               requests:
-                cpu: 10m
+                cpu: 100m
                 memory: 100Mi
               limits:
-                cpu: 20m
+                cpu: 200m
                 memory: 200Mi
           sidekiq:
             resources:
