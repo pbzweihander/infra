@@ -147,6 +147,7 @@ resource "kubectl_manifest" "karpenter_node_template" {
     metadata:
       name: default
     spec:
+      amiFamily: Bottlerocket
       subnetSelector:
         karpenter.sh/discovery: ${var.cluster_name}
       securityGroupSelector:
