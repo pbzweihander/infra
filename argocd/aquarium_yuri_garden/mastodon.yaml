@@ -44,14 +44,15 @@ spec:
             login: "${smtp.login}"
             password: "${smtp.password}"
           web:
+            replicas: 2
             serviceAnnotations:
               alb.ingress.kubernetes.io/healthcheck-path: /health
             resources:
               requests:
-                cpu: 100m
+                cpu: 200m
                 memory: 1Gi
               limits:
-                cpu: 200m
+                cpu: 300m
                 memory: 2Gi
           streaming:
             serviceAnnotations:
