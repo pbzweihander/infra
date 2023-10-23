@@ -21,13 +21,13 @@ spec:
           replicaCount: 3
           image:
             repository: ghcr.io/pbzweihander/misskey
-            tag: 2023.9.2-yurigarden.0
+            tag: 2023.11.0-yurigarden.0
           resources:
             requests:
-              cpu: 100m
+              cpu: 200m
               memory: 1Gi
             limits:
-              cpu: 200m
+              cpu: 300m
               memory: 2Gi
         ingress:
           enabled: true
