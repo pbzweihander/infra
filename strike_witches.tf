@@ -58,7 +58,7 @@ resource "aws_acm_certificate" "wildcard_strike_witches_dev" {
   }
 }
 
-resource "aws_route53_record" "wildcard_strike_witches_dev_acm_validation" {
+resource "cloudflare_record" "wildcard_strike_witches_dev_acm_validation" {
   for_each = {
     for dvo in aws_acm_certificate.wildcard_strike_witches_dev.domain_validation_options : dvo.domain_name => {
       name   = dvo.resource_record_name
@@ -67,12 +67,11 @@ resource "aws_route53_record" "wildcard_strike_witches_dev_acm_validation" {
     }
   }
 
-  allow_overwrite = true
-  name            = each.value.name
-  records         = [each.value.record]
-  ttl             = 60
-  type            = each.value.type
-  zone_id         = aws_route53_zone.strike_witches_dev.zone_id
+  zone_id = data.cloudflare_zone.witches_dev.id
+  name    = each.value.name
+  value   = each.value.record
+  type    = each.value.type
+  proxied = false
 }
 
 module "strike_witches_eks" {
@@ -84,13 +83,11 @@ module "strike_witches_eks" {
   vpc_id     = module.strike_witches_vpc.vpc_id
   subnet_ids = module.strike_witches_vpc.private_subnets
 
-  managed_domain_hosted_zones = [
-    aws_route53_zone.pbzweihander_dev,
-    aws_route53_zone.strike_witches_dev,
-  ]
+  managed_domain_hosted_zones = []
 
   eks_managed_node_group_defaults = {
     ami_type = "BOTTLEROCKET_x86_64"
+    platform = "bottlerocket"
 
     iam_role_attach_cni_policy = true
 
@@ -106,8 +103,6 @@ module "strike_witches_eks" {
   eks_managed_node_groups = {
     t3a_medium_bottlerocket_a = {
       name           = "sw-t3a-sma-br-a"
-      ami_type       = "BOTTLEROCKET_x86_64"
-      platform       = "bottlerocket"
       instance_types = ["t3a.small"]
       subnet_ids     = [module.strike_witches_vpc.private_subnets[0]]
 
@@ -119,8 +114,6 @@ module "strike_witches_eks" {
     # ap-northeast-1c does not have t3a instances.
     t3a_medium_bottlerocket_d = {
       name           = "sw-t3a-sma-br-d"
-      ami_type       = "BOTTLEROCKET_x86_64"
-      platform       = "bottlerocket"
       instance_types = ["t3a.small"]
       subnet_ids     = [module.strike_witches_vpc.private_subnets[2]]
 
@@ -135,10 +128,11 @@ module "strike_witches_eks" {
   cloudflare_managed_domains = [
     "pbzweihander.social",
     "yuri.garden",
+    "pbzweihander.dev",
+    "witches.dev",
   ]
 
-  grafana_ingress_host = "grafana.strike.witches.dev"
-  argocd_ingress_host  = "argocd.strike.witches.dev"
+  argocd_ingress_host = "argocd.strike.witches.dev"
 
   notification_slack_webhook_url = var.notification_slack_webhook_url
 

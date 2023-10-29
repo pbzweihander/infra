@@ -25,7 +25,7 @@ resource "aws_acm_certificate" "cheph_pbzweihander_dev" {
   }
 }
 
-resource "aws_route53_record" "cheph_pbzweihander_dev_acm_validation" {
+resource "cloudflare_record" "cheph_pbzweihander_dev_acm_validation" {
   for_each = {
     for dvo in aws_acm_certificate.cheph_pbzweihander_dev.domain_validation_options : dvo.domain_name => {
       name   = dvo.resource_record_name
@@ -34,12 +34,11 @@ resource "aws_route53_record" "cheph_pbzweihander_dev_acm_validation" {
     }
   }
 
-  allow_overwrite = true
-  name            = each.value.name
-  records         = [each.value.record]
-  ttl             = 60
-  type            = each.value.type
-  zone_id         = aws_route53_zone.pbzweihander_dev.zone_id
+  zone_id = data.cloudflare_zone.pbzweihander_dev.id
+  name    = each.value.name
+  value   = each.value.record
+  type    = each.value.type
+  proxied = false
 }
 
 resource "aws_s3_bucket" "cheph" {

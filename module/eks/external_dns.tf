@@ -4,6 +4,8 @@ locals {
 }
 
 data "aws_iam_policy_document" "external_dns" {
+  count = length(var.managed_domain_hosted_zones) > 0 ? 1 : 0
+
   statement {
     actions = [
       "route53:ChangeResourceRecordSets",
@@ -30,8 +32,10 @@ data "aws_iam_policy_document" "external_dns" {
 }
 
 resource "aws_iam_policy" "external_dns" {
+  count = length(var.managed_domain_hosted_zones) > 0 ? 1 : 0
+
   name_prefix = "${var.cluster_name}-external-dns"
-  policy      = data.aws_iam_policy_document.external_dns.json
+  policy      = data.aws_iam_policy_document.external_dns[0].json
 }
 
 data "aws_iam_policy_document" "external_dns_assume" {
@@ -62,8 +66,10 @@ resource "aws_iam_role" "external_dns" {
 }
 
 resource "aws_iam_role_policy_attachment" "external_dns" {
+  count = length(var.managed_domain_hosted_zones) > 0 ? 1 : 0
+
   role       = aws_iam_role.external_dns.name
-  policy_arn = aws_iam_policy.external_dns.arn
+  policy_arn = aws_iam_policy.external_dns[0].arn
 }
 
 resource "helm_release" "external_dns" {

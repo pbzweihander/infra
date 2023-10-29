@@ -35,11 +35,6 @@ variable "cloudflare_api_token" {
   sensitive = true
 }
 
-variable "grafana_ingress_host" {
-  type    = string
-  default = ""
-}
-
 variable "argocd_ingress_host" {
   type    = string
   default = ""
