@@ -18,7 +18,7 @@ spec:
       values: |
         image:
           repository: ghcr.io/pbzweihander/mastodon
-          tag: 4.1.5-aquariumyurigarden.1
+          tag: 4.3.0-alpha.0-aquariumyurigarden
         mastodon:
           locale: ko
           local_domain: aquarium.yuri.garden
