@@ -41,6 +41,7 @@ spec:
           secretKey: "${outline.secretKey}"
           utilsSecret: "${outline.utilsSecret}"
           url: https://outline.yuri.garden
+          defaultLanguage: ko_KR
         database:
           url: "${database.url}"
         redis:
