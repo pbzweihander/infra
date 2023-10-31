@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "outline.fullname" . }}-cron
+  labels:
+    {{- include "outline.labels" . | nindent 4 }}
+spec:
+  schedule: "0 0 * * *"
+  startingDeadlineSeconds: 600
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: requester
+            image: busybox:1.28
+            imagePullPolicy: IfNotPresent
+            command:
+            - wget
+            - -qO-
+            - "{{ .Values.outline.url }}/api/cron.daily?token={{ .Values.outline.utilsSecret }}"
+          restartPolicy: OnFailure
