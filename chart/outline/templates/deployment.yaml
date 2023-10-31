@@ -93,7 +93,7 @@ spec:
         - name: FORCE_HTTPS
           value: "false"
         - name: DEFAULT_LANGUAGE
-          value: {{ .Value.outline.defaultLanguage | default "en_US" | quote }}
+          value: {{ .Values.outline.defaultLanguage | default "en_US" | quote }}
         ports:
         - name: http
           containerPort: 3000
