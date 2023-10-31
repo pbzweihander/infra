@@ -564,6 +564,9 @@ resource "kubectl_manifest" "yuri_garden_outline" {
         username = aws_iam_access_key.yuri_garden_ses.id
         password = aws_iam_access_key.yuri_garden_ses.ses_smtp_password_v4
       }
+      iframely = {
+        apiKey = var.iframely_api_key
+      }
     },
   )
 }

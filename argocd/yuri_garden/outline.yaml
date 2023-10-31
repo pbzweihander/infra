@@ -67,6 +67,8 @@ spec:
           password: "${smtp.password}"
           fromEmail: 백합정원 <noreply@yuri.garden>
           secure: "true"
+        iframely:
+          apiKey: "${iframely.apiKey}"
   syncPolicy:
     automated:
       prune: true

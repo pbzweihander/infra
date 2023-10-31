@@ -104,3 +104,8 @@ variable "grafana_cloud_token" {
   type      = string
   sensitive = true
 }
+
+variable "iframely_api_key" {
+  type      = string
+  sensitive = true
+}
