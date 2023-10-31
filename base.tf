@@ -52,7 +52,7 @@ terraform {
 
     cloudflare = {
       source  = "cloudflare/cloudflare"
-      version = "4.9.0"
+      version = "4.17.0"
     }
 
     bcrypt = {
