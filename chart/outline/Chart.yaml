@@ -1,0 +1,10 @@
+apiVersion: v2
+name: outline
+description: A Helm chart for outline
+type: application
+version: 0.1.0
+appVersion: 0.72.0-pbzweihander.0
+dependencies:
+- name: redis
+  version: 18.2.0
+  repository: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
