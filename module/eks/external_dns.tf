@@ -75,7 +75,7 @@ resource "aws_iam_role_policy_attachment" "external_dns" {
 resource "helm_release" "external_dns" {
   repository = "https://charts.bitnami.com/bitnami"
   chart      = "external-dns"
-  version    = "6.11.2"
+  version    = "6.27.0"
 
   namespace        = local.external_dns_namespace
   name             = "external-dns"
@@ -87,6 +87,7 @@ resource "helm_release" "external_dns" {
     yamlencode({
       sources = [
         "ingress",
+        "service",
       ]
       aws = {
         region = data.aws_region.current.name

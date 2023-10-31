@@ -1,7 +1,7 @@
 resource "helm_release" "external_dns_cloudflare" {
   repository = "https://charts.bitnami.com/bitnami"
   chart      = "external-dns"
-  version    = "6.11.2"
+  version    = "6.27.0"
 
   namespace        = "external-dns-cloudflare"
   name             = "external-dns"
@@ -13,6 +13,7 @@ resource "helm_release" "external_dns_cloudflare" {
     yamlencode({
       sources = [
         "ingress",
+        "service",
       ]
       provider = "cloudflare"
       cloudflare = {

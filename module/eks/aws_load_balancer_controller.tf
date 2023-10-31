@@ -4,7 +4,7 @@ locals {
 }
 
 data "http" "aws_load_balancer_controller_crd" {
-  url = "https://raw.githubusercontent.com/aws/eks-charts/93fa739be6d96e15ec1735a50ace40eefb2ec2c6/stable/aws-load-balancer-controller/crds/crds.yaml"
+  url = "https://raw.githubusercontent.com/aws/eks-charts/0541e76e0d425c01141c016eca90338bb6d348fa/stable/aws-load-balancer-controller/crds/crds.yaml"
 }
 
 data "kubectl_file_documents" "aws_load_balancer_controller_crd" {
@@ -17,7 +17,7 @@ resource "kubectl_manifest" "aws_load_balancer_controller_crd" {
 }
 
 data "http" "aws_load_balancer_controller_iam_policy" {
-  url = "https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.4.4/docs/install/iam_policy.json"
+  url = "https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.6.2/docs/install/iam_policy.json"
 }
 
 resource "aws_iam_policy" "aws_load_balancer_controller" {
@@ -65,7 +65,7 @@ resource "helm_release" "aws_load_balancer_controller" {
 
   repository = "https://aws.github.io/eks-charts"
   chart      = "aws-load-balancer-controller"
-  version    = "1.4.5"
+  version    = "1.6.2"
 
   namespace        = local.aws_load_balancer_controller_namespace
   name             = "aws-load-balancer-controller"
