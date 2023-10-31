@@ -4,16 +4,18 @@ locals {
 }
 
 data "aws_iam_policy_document" "external_dns" {
-  count = length(var.managed_domain_hosted_zones) > 0 ? 1 : 0
+  dynamic "statement" {
+    for_each = length(var.managed_domain_hosted_zones) > 0 ? [{}] : []
 
-  statement {
-    actions = [
-      "route53:ChangeResourceRecordSets",
-    ]
+    content {
+      actions = [
+        "route53:ChangeResourceRecordSets",
+      ]
 
-    resources = [for zone in var.managed_domain_hosted_zones : zone.arn]
+      resources = [for zone in var.managed_domain_hosted_zones : zone.arn]
 
-    effect = "Allow"
+      effect = "Allow"
+    }
   }
 
   statement {
@@ -32,10 +34,8 @@ data "aws_iam_policy_document" "external_dns" {
 }
 
 resource "aws_iam_policy" "external_dns" {
-  count = length(var.managed_domain_hosted_zones) > 0 ? 1 : 0
-
   name_prefix = "${var.cluster_name}-external-dns"
-  policy      = data.aws_iam_policy_document.external_dns[0].json
+  policy      = data.aws_iam_policy_document.external_dns.json
 }
 
 data "aws_iam_policy_document" "external_dns_assume" {
@@ -66,10 +66,8 @@ resource "aws_iam_role" "external_dns" {
 }
 
 resource "aws_iam_role_policy_attachment" "external_dns" {
-  count = length(var.managed_domain_hosted_zones) > 0 ? 1 : 0
-
   role       = aws_iam_role.external_dns.name
-  policy_arn = aws_iam_policy.external_dns[0].arn
+  policy_arn = aws_iam_policy.external_dns.arn
 }
 
 resource "helm_release" "external_dns" {

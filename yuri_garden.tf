@@ -86,6 +86,10 @@ resource "aws_iam_user_policy_attachment" "yuri_garden_ses" {
   policy_arn = aws_iam_policy.yuri_garden_ses.arn
 }
 
+resource "aws_iam_access_key" "yuri_garden_ses" {
+  user = aws_iam_user.yuri_garden_ses.name
+}
+
 resource "random_password" "yuri_garden_rds_master_password" {
   length  = 42
   special = false
@@ -327,6 +331,196 @@ resource "kubectl_manifest" "yurigarden_contest" {
       jwtSecret        = random_password.yurigarden_contest_jwt_secret.result
       misskeyApiKey    = var.yuri_garden_contest_misskey_api_key
       postgresPassword = random_password.yurigarden_contest_postgres_password.result
+    },
+  )
+}
+
+resource "aws_acm_certificate" "outline_yuri_garden" {
+  domain_name       = "outline.yuri.garden"
+  validation_method = "DNS"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "cloudflare_record" "outline_yuri_garden_acm_validation" {
+  for_each = {
+    for dvo in aws_acm_certificate.outline_yuri_garden.domain_validation_options : dvo.domain_name => {
+      name   = dvo.resource_record_name
+      record = dvo.resource_record_value
+      type   = dvo.resource_record_type
+    }
+  }
+
+  zone_id = data.cloudflare_zone.yuri_garden.id
+  name    = each.value.name
+  value   = each.value.record
+  type    = each.value.type
+  proxied = false
+}
+
+resource "random_password" "yuri_garden_outline_rds_password" {
+  length  = 42
+  special = false
+}
+
+resource "random_id" "yuri_garden_outline_secret_key" {
+  byte_length = 32
+}
+
+resource "random_password" "yuri_garden_outline_utils_secret" {
+  length  = 42
+  special = false
+}
+
+resource "random_password" "yuri_garden_outline_oidc_client_id" {
+  length  = 42
+  special = false
+}
+
+resource "random_password" "yuri_garden_outline_oidc_client_secret" {
+  length  = 42
+  special = false
+}
+
+resource "aws_security_group" "yuri_garden_outline_rds" {
+  name   = "yuri-garden-outline-rds"
+  vpc_id = module.strike_witches_vpc.vpc_id
+
+  ingress {
+    description = "Allow strike-witches private subnets"
+    from_port   = 5432
+    to_port     = 5432
+    protocol    = "tcp"
+    cidr_blocks = module.strike_witches_vpc.private_subnets_cidr_blocks
+  }
+}
+
+module "yuri_garden_outline_rds" {
+  source  = "terraform-aws-modules/rds/aws"
+  version = "~> 6.1.0"
+
+  identifier           = "yuri-garden-outline"
+  engine               = "postgres"
+  engine_version       = "14"
+  family               = "postgres14"
+  major_engine_version = "14"
+  instance_class       = "db.t4g.small"
+  deletion_protection  = true
+
+  apply_immediately = true
+
+  allocated_storage     = 50
+  max_allocated_storage = 100
+
+  db_name                     = "outline"
+  username                    = "outline"
+  port                        = 5432
+  manage_master_user_password = false
+  password                    = random_password.yuri_garden_outline_rds_password.result
+
+  multi_az               = true
+  subnet_ids             = module.strike_witches_vpc.intra_subnets
+  vpc_security_group_ids = [aws_security_group.yuri_garden_outline_rds.id]
+
+  create_db_subnet_group    = true
+  create_db_parameter_group = true
+
+  maintenance_window       = "sat:20:00-sat:21:00"
+  backup_window            = "19:00-20:00"
+  backup_retention_period  = 7
+  delete_automated_backups = false
+}
+
+resource "aws_s3_bucket" "yuri_garden_outline" {
+  bucket_prefix = "yuri-garden-outline"
+}
+
+data "aws_iam_policy_document" "yuri_garden_outline" {
+  statement {
+    actions = [
+      "s3:ListBucket",
+      "s3:GetObject",
+      "s3:PutObject",
+      "s3:DeleteObject",
+    ]
+
+    resources = [
+      "${aws_s3_bucket.yuri_garden_outline.arn}",
+      "${aws_s3_bucket.yuri_garden_outline.arn}/*",
+    ]
+
+    effect = "Allow"
+  }
+}
+
+resource "aws_iam_policy" "yuri_garden_outline" {
+  name_prefix = "yuri-garden-outline"
+  policy      = data.aws_iam_policy_document.yuri_garden_outline.json
+}
+
+data "aws_iam_policy_document" "yuri_garden_outline_assume" {
+  statement {
+    actions = ["sts:AssumeRoleWithWebIdentity"]
+
+    principals {
+      type        = "Federated"
+      identifiers = [module.strike_witches_eks.eks_cluster_oidc_provider_arn]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "${module.strike_witches_eks.eks_cluster_oidc_provider}:sub"
+
+      values = [
+        "system:serviceaccount:yuri-garden:yuri-garden-outline",
+      ]
+    }
+
+    effect = "Allow"
+  }
+}
+
+resource "aws_iam_role" "yuri_garden_outline" {
+  name_prefix        = "yuri-garden-outline"
+  assume_role_policy = data.aws_iam_policy_document.yuri_garden_outline_assume.json
+}
+
+resource "aws_iam_role_policy_attachment" "yuri_garden_outline" {
+  role       = aws_iam_role.yuri_garden_outline.name
+  policy_arn = aws_iam_policy.yuri_garden_outline.arn
+}
+
+resource "kubectl_manifest" "yuri_garden_outline" {
+  provider = kubectl.strike_witches
+
+  depends_on = [
+    kubectl_manifest.yuri_garden_project,
+  ]
+
+  yaml_body = templatefile(
+    "argocd/yuri_garden/outline.yaml",
+    {
+      roleArn = aws_iam_role.yuri_garden_outline.arn
+      outline = {
+        secretKey   = random_id.yuri_garden_outline_secret_key.hex
+        utilsSecret = random_password.yuri_garden_outline_utils_secret.result
+      }
+      database = {
+        url = "postgres://${module.yuri_garden_outline_rds.db_instance_username}:${random_password.yuri_garden_outline_rds_password.result}@${module.yuri_garden_outline_rds.db_instance_address}:5432/${module.yuri_garden_outline_rds.db_instance_name}"
+      }
+      s3 = {
+        bucket = aws_s3_bucket.yuri_garden_outline.bucket
+      }
+      oidc = {
+        clientId     = random_password.yuri_garden_outline_oidc_client_id.result
+        clientSecret = random_password.yuri_garden_outline_oidc_client_secret.result
+      }
+      smtp = {
+        username = aws_iam_access_key.yuri_garden_ses.id
+        password = aws_iam_access_key.yuri_garden_ses.ses_smtp_password_v4
+      }
     },
   )
 }
