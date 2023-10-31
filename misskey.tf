@@ -173,7 +173,7 @@ resource "helm_release" "misskey" {
       replicaCount = 2
       image = {
         repository = "ghcr.io/pbzweihander/misskey"
-        tag        = "2023.11.0-pbzweihander.0"
+        tag        = "2023.11.0-pbzweihander.4"
       }
       resources = {
         requests = {

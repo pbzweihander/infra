@@ -374,6 +374,11 @@ resource "random_password" "yuri_garden_outline_utils_secret" {
   special = false
 }
 
+resource "random_password" "yuri_garden_outline_redis_password" {
+  length  = 42
+  special = false
+}
+
 resource "random_password" "yuri_garden_outline_oidc_client_id" {
   length  = 42
   special = false
@@ -437,6 +442,39 @@ resource "aws_s3_bucket" "yuri_garden_outline" {
   bucket_prefix = "yuri-garden-outline"
 }
 
+resource "aws_s3_bucket_ownership_controls" "yuri_garden_outline" {
+  bucket = aws_s3_bucket.yuri_garden_outline.id
+
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
+}
+
+resource "aws_s3_bucket_cors_configuration" "yuri_garden_outline" {
+  bucket = aws_s3_bucket.yuri_garden_outline.id
+
+  cors_rule {
+    allowed_headers = ["*"]
+    allowed_methods = ["PUT", "POST"]
+    allowed_origins = ["https://outline.yuri.garden"]
+  }
+
+  cors_rule {
+    allowed_headers = []
+    allowed_methods = ["GET"]
+    allowed_origins = ["*"]
+  }
+}
+
+resource "aws_s3_bucket_public_access_block" "yuri_garden_outline" {
+  bucket = aws_s3_bucket.yuri_garden_outline.id
+
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
+}
+
 data "aws_iam_policy_document" "yuri_garden_outline" {
   statement {
     actions = [
@@ -444,6 +482,8 @@ data "aws_iam_policy_document" "yuri_garden_outline" {
       "s3:GetObject",
       "s3:PutObject",
       "s3:DeleteObject",
+      "s3:GetObjectAcl",
+      "s3:PutObjectAcl",
     ]
 
     resources = [
@@ -509,6 +549,9 @@ resource "kubectl_manifest" "yuri_garden_outline" {
       }
       database = {
         url = "postgres://${module.yuri_garden_outline_rds.db_instance_username}:${random_password.yuri_garden_outline_rds_password.result}@${module.yuri_garden_outline_rds.db_instance_address}:5432/${module.yuri_garden_outline_rds.db_instance_name}"
+      }
+      redis = {
+        password = random_password.yuri_garden_outline_redis_password.result
       }
       s3 = {
         bucket = aws_s3_bucket.yuri_garden_outline.bucket
