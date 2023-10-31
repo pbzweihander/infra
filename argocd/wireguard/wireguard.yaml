@@ -1,0 +1,41 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  namespace: argocd
+  name: wireguard
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: wireguard
+  destination:
+    namespace: wireguard
+    server: https://kubernetes.default.svc
+  source:
+    repoURL: https://github.com/pbzweihander/wireguard-chart.git
+    path: helm/wireguard
+    targetRevision: HEAD
+    helm:
+      values: |
+        replicaCount: 2
+        autoscaling:
+          enabled: false
+        wireguard:
+          serverAddress: 172.16.0.1/24
+          serverCidr: 172.16.0.0/24
+          clients:
+          - FriendlyName: rossman
+            PublicKey: Hppirx5cSnI71pzTYLvS5uq/0VFsgfTqZKVCu6HmJhw=
+            AllowedIPs: 172.16.0.0/24
+        service:
+          annotations:
+            external-dns.alpha.kubernetes.io/hostname: wireguard.strike.witches.dev
+            service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+            service.beta.kubernetes.io/aws-load-balancer-type: external
+            service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+        securityContext:
+          privileged: true
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
