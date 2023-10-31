@@ -39,7 +39,7 @@ spec:
         - name: PGSSLMODE
           value: disable
         - name: REDIS_URL
-          value: redis://:{{ .redis.password }}@{{ .Release.Name }}-redis-master:6379
+          value: redis://:{{ .Values.redis.password }}@{{ .Release.Name }}-redis-master:6379
         - name: URL
           value: {{ .Values.outline.url | quote }}
         - name: PORT
