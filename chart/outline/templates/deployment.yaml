@@ -90,6 +90,8 @@ spec:
           value: {{ .Values.smtp.tlsCiphers | quote }}
         - name: SMTP_SECURE
           value: {{ .Values.smtp.secure | quote }}
+        - name: FORCE_HTTPS
+          value: "false"
         ports:
         - name: http
           containerPort: 3000
