@@ -94,6 +94,8 @@ spec:
           value: "false"
         - name: DEFAULT_LANGUAGE
           value: {{ .Values.outline.defaultLanguage | default "en_US" | quote }}
+        - name: IFRAMELY_API_KEY
+          value: {{ .Values.iframely.apiKey | quote }}
         ports:
         - name: http
           containerPort: 3000
