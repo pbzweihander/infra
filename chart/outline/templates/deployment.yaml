@@ -32,8 +32,8 @@ spec:
           value: production
         - name: SECRET_KEY
           value: {{ .Values.outline.secretKey | quote }}
-        - name: UTILS_KEY
-          value: {{ .Values.outline.utilsKey | quote }}
+        - name: UTILS_SECRET
+          value: {{ .Values.outline.utilsSecret | quote }}
         - name: DATABASE_URL
           value: {{ .Values.database.url | quote }}
         - name: PGSSLMODE
