@@ -1,3 +1,0 @@
-#!/bin/bash -e
-
-terraform fmt -list=true -write=false -check -diff
