@@ -1,0 +1,41 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  namespace: argocd
+  name: fediq
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: fediq
+  destination:
+    namespace: fediq
+    server: https://kubernetes.default.svc
+  source:
+    repoURL: https://github.com/pbzweihander/fediq.git
+    path: chart
+    targetRevision: HEAD
+    helm:
+      values: |
+        replicas: 2
+        ingress:
+          enabled: true
+          className: alb
+          annotations:
+            alb.ingress.kubernetes.io/scheme: internet-facing
+            alb.ingress.kubernetes.io/target-type: ip
+            alb.ingress.kubernetes.io/listen-ports: "[{\"HTTP\": 80}, {\"HTTPS\":443}]"
+            alb.ingress.kubernetes.io/ssl-redirect: "443"
+          hosts:
+          - host: fediq.pbzweihander.dev
+            paths:
+            - path: "/"
+              pathType: Prefix
+          tls: []
+        fediq:
+          publicUrl: https://fediq.pbzweihander.dev
+          jwtSecret: "${jwtSecret}"
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
