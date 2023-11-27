@@ -18,7 +18,7 @@ spec:
       values: |
         replicaCount: 2
         disruptionBudget:
-          minAvailable: 1
+          enabled: false
         autoscaling:
           enabled: false
         wireguard:
