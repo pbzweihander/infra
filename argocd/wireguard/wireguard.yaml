@@ -17,6 +17,8 @@ spec:
     helm:
       values: |
         replicaCount: 2
+        disruptionBudget:
+          minAvailable: 1
         autoscaling:
           enabled: false
         wireguard:
