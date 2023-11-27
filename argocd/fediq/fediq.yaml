@@ -16,7 +16,7 @@ spec:
     targetRevision: HEAD
     helm:
       values: |
-        replicas: 2
+        replicaCount: 2
         ingress:
           enabled: true
           className: alb
