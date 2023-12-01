@@ -98,29 +98,24 @@ module "strike_witches_eks" {
 
     min_size = 1
     max_size = 1
+
+    instance_types = ["t3a.medium"]
+
+    iam_role_additional_policies = [
+      # Required by Karpenter
+      "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    ]
   }
 
   eks_managed_node_groups = {
     t3a_medium_bottlerocket_a = {
       name           = "sw-t3a-sma-br-a"
-      instance_types = ["t3a.small"]
       subnet_ids     = [module.strike_witches_vpc.private_subnets[0]]
-
-      iam_role_additional_policies = [
-        # Required by Karpenter
-        "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonSSMManagedInstanceCore"
-      ]
     }
     # ap-northeast-1c does not have t3a instances.
     t3a_medium_bottlerocket_d = {
       name           = "sw-t3a-sma-br-d"
-      instance_types = ["t3a.small"]
       subnet_ids     = [module.strike_witches_vpc.private_subnets[2]]
-
-      iam_role_additional_policies = [
-        # Required by Karpenter
-        "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonSSMManagedInstanceCore"
-      ]
     }
   }
 

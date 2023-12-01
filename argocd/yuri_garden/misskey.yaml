@@ -24,11 +24,11 @@ spec:
             tag: 2023.12.0-yurigarden.pre0
           resources:
             requests:
-              cpu: 200m
-              memory: 1Gi
+              cpu: 300m
+              memory: 1.2Gi
             limits:
               cpu: 300m
-              memory: 2Gi
+              memory: 1.2Gi
         ingress:
           enabled: true
           className: alb

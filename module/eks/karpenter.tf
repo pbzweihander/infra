@@ -173,6 +173,9 @@ resource "kubectl_manifest" "karpenter_provisioner" {
       - key: "karpenter.k8s.aws/instance-family"
         operator: In
         values: ["t3a"]
+      - key: "karpenter.k8s.aws/instance-size"
+        operator: In
+        values: ["medium", "large", "xlarge", "2xlarge"]
       - key: "topology.kubernetes.io/zone"
         operator: In
         values: ["ap-northeast-1a", "ap-northeast-1d"]
