@@ -40,6 +40,13 @@ spec:
             secretKeyRef:
               name: onepassword-service-account
               key: token
+        volumes:
+        - name: op # required by 1password injector
+          emptyDir: {}
+        volumeMounts:
+        - name: op # required by 1password injector
+          path: /var/www/.config/op
+        command: ["/bin/docker-entrypoint.sh"] # required by 1password injector
         key: op://strike-witches/tavern-house-bookstack-app-key/password
         url: https://shelf.tavern.house
         lang: ko
