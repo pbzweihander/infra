@@ -40,6 +40,8 @@ securityContext: {}
 volumes: []
 volumeMounts: []
 
+initContainers: []
+
 command: []
 
 key: ""
