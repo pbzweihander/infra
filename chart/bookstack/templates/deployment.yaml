@@ -37,10 +37,7 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          {{- with .Values.command }}
-          command:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
+          command: ["apache2-foreground"]
           ports:
             - name: http
               containerPort: 8080

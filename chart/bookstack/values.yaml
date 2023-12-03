@@ -42,8 +42,6 @@ volumeMounts: []
 
 initContainers: []
 
-command: []
-
 key: ""
 url: ""
 lang: en
