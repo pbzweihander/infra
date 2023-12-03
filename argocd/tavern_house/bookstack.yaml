@@ -50,10 +50,9 @@ spec:
         - name: set-op-dir-ownership # required by 1password injector
           image: busybox
           command:
-          - chown
-          - -R
-          - 33:33
-          - /var/www/.config/op
+          - sh
+          - -c
+          - "chown -R 33:33 /var/www/.config/op && chmod -R 700 /var/www/.config/op"
           volumeMounts:
           - name: op
             mountPath: /var/www/.config/op
