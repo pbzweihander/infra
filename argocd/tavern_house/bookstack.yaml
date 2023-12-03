@@ -18,7 +18,7 @@ spec:
       values: |
         replicaCount: 3
         image:
-          tag: 23.10
+          tag: "23.10"
         service:
           annotations:
             alb.ingress.kubernetes.io/healthcheck-path: /status
@@ -79,6 +79,7 @@ spec:
           key: op://strike-witches/tavern-house-bookstack-r2/username
           secret: op://strike-witches/tavern-house-bookstack-r2/password
           bucket: tavern-house-bookstack
+          region: auto
           endpoint: https://4c92705a50dd61764cd79dac00dfcc60.r2.cloudflarestorage.com
           url: https://object.shelf.tavern.house
   syncPolicy:
