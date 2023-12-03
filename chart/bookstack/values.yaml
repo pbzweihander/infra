@@ -37,6 +37,9 @@ affinity: {}
 podSecurityContext: {}
 securityContext: {}
 
+volumes: []
+volumeMounts: []
+
 command: []
 
 key: ""

@@ -41,7 +41,13 @@ spec:
               name: onepassword-service-account
               key: token
         podSecurityContext:
-          fsGroup: 2000 # required by 1password injector
+          fsGroup: 33 # required by 1password injector
+        volumes:
+        - name: op # required by 1password injector
+          emptyDir: {}
+        volumeMounts:
+        - name: op # required by 1password injector
+          mountPath: /var/www/.config/op
         command: ["/bin/docker-entrypoint.sh"] # required by 1password injector
         key: op://strike-witches/tavern-house-bookstack-app-key/password
         url: https://shelf.tavern.house
