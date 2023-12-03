@@ -173,7 +173,7 @@ resource "onepassword_item" "tavern_house_bookstack_rds" {
 }
 
 resource "random_password" "tavern_house_bookstack_app_key" {
-  length  = 42
+  length  = 32
   special = false
 }
 

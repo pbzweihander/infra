@@ -19,6 +19,9 @@ spec:
         replicaCount: 3
         image:
           tag: 23.10
+        service:
+          annotations:
+            alb.ingress.kubernetes.io/healthcheck-path: /status
         ingress:
           enabled: true
           className: alb
