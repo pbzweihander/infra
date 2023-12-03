@@ -109,3 +109,13 @@ variable "iframely_api_key" {
   type      = string
   sensitive = true
 }
+
+variable "onepassword_service_account_token" {
+  type      = string
+  sensitive = true
+}
+
+variable "onepassword_service_account_token_strike_witches" {
+  type      = string
+  sensitive = true
+}

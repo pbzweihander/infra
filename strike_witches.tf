@@ -109,13 +109,13 @@ module "strike_witches_eks" {
 
   eks_managed_node_groups = {
     t3a_medium_bottlerocket_a = {
-      name           = "sw-t3a-sma-br-a"
-      subnet_ids     = [module.strike_witches_vpc.private_subnets[0]]
+      name       = "sw-t3a-sma-br-a"
+      subnet_ids = [module.strike_witches_vpc.private_subnets[0]]
     }
     # ap-northeast-1c does not have t3a instances.
     t3a_medium_bottlerocket_d = {
-      name           = "sw-t3a-sma-br-d"
-      subnet_ids     = [module.strike_witches_vpc.private_subnets[2]]
+      name       = "sw-t3a-sma-br-d"
+      subnet_ids = [module.strike_witches_vpc.private_subnets[2]]
     }
   }
 
@@ -125,6 +125,7 @@ module "strike_witches_eks" {
     "yuri.garden",
     "pbzweihander.dev",
     "witches.dev",
+    "tavern.house",
   ]
 
   argocd_ingress_host = "argocd.strike.witches.dev"

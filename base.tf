@@ -12,7 +12,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 5.6.2"
+      version = "~> 5.29.0"
     }
 
     cloudinit = {
@@ -52,12 +52,17 @@ terraform {
 
     cloudflare = {
       source  = "cloudflare/cloudflare"
-      version = "4.17.0"
+      version = "~> 4.17.0"
     }
 
     bcrypt = {
       source  = "viktorradnai/bcrypt"
-      version = "0.1.2"
+      version = "~> 0.1.2"
+    }
+
+    onepassword = {
+      source  = "1Password/onepassword"
+      version = "~> 1.3.1"
     }
   }
 }
@@ -107,6 +112,15 @@ provider "cloudflare" {
   api_token = var.cloudflare_api_token
 }
 
+provider "onepassword" {
+  service_account_token = var.onepassword_service_account_token
+  op_cli_path           = "${path.module}/bin/op"
+}
+
 data "aws_region" "current" {}
 
 data "aws_partition" "current" {}
+
+data "onepassword_vault" "strike_witches" {
+  name = "strike-witches"
+}

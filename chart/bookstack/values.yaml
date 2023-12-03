@@ -1,0 +1,66 @@
+replicaCount: 1
+
+image:
+  repository: ghcr.io/linuxserver/bookstack
+  pullPolicy: IfNotPresent
+  tag: ""
+
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts: []
+  tls: []
+
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+key: ""
+url: ""
+lang: en
+
+database:
+  host: ""
+  port:
+  database: ""
+  username: ""
+  password: ""
+
+mail:
+  from: ""
+  fromName: ""
+  host: ""
+  port:
+  username: ""
+  password: ""
+  encryption: tls
+  verifySsl: true
+
+s3:
+  key: ""
+  secret: ""
+  bucket: ""
+  region: ""
+  endpoint: ""
+  url: ""
+
+additionalEnvs: []
