@@ -18,7 +18,7 @@ spec:
       values: |
         replicaCount: 3
         image:
-          tag: 23.10.4
+          tag: 23.10
         ingress:
           enabled: true
           className: alb
