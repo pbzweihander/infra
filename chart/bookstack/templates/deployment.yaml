@@ -23,7 +23,7 @@ spec:
         - name: bookstack
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: [] # required for 1password injector
+          command: ["tail", "-f", "/dev/null"] # required for 1password injector
           ports:
             - name: http
               containerPort: 80
