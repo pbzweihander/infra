@@ -34,8 +34,7 @@ tolerations: []
 
 affinity: {}
 
-volumes: []
-volumeMounts: []
+securityContext: {}
 
 command: []
 

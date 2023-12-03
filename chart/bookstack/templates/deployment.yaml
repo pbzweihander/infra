@@ -19,12 +19,10 @@ spec:
         {{- include "bookstack.selectorLabels" . | nindent 8 }}
     spec:
       serviceAccountName: {{ include "bookstack.serviceAccountName" . }}
-      {{- with .Values.volumes }}
-      volumes:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
       containers:
         - name: bookstack
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- with .Values.command }}
@@ -97,10 +95,6 @@ spec:
             {{- with .Values.additionalEnvs }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
-          {{- with .Values.volumeMounts }}
-          volumeMounts:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
