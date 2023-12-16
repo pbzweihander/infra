@@ -27,7 +27,7 @@ spec:
         command:
         - sh
         - -c
-        - 'cat /mnt/config-tpl/default.yml.tpl | envsubst > /misskey/.config/default.yml && cat /mnt/config-tpl/docker.env.tpl | envsubst > /misskey/.config/docker.env && pnpm run migrateandstart'
+        - 'cat /mnt/default.yml.tpl | envsubst > /misskey/.config/default.yml && cat /mnt/docker.env.tpl | envsubst > /misskey/.config/docker.env && pnpm run migrateandstart'
         ports:
         - name: http
           containerPort: {{ .Values.web.port }}
