@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "misskey.fullname" . }}-web
+  labels:
+    {{- include "misskey.labels" . | nindent 4 }}
+data:
+  default.yml.tpl: |
+    url: "$URL"
+    port: $PORT
+    db:
+      host: "$DATABASE_HOST"
+      port: $DATABASE_PORT
+      db: "$DATABASE_DATABASE"
+      user: "$DATABASE_USER"
+      pass: "$DATABASE_PASS"
+    dbReplications: false
+    redis:
+      host: "$REDIS_HOST"
+      port: $REDIS_PORT
+      pass: "$REDIS_PASS"
+    meilisearch:
+      host: "$MEILISEARCH_HOST"
+      port: $MEILISEARCH_PORT
+      apiKey: "$MEILISEARCH_API_KEY"
+      ssl: "$MEILISEARCH_SSL"
+      index: "$MEILISEARCH_INDEX"
+    id: 'aid'
+    proxyBypassHosts:
+    - api.deepl.com
+    - api-free.deepl.com
+    - www.recaptcha.net
+    - hcaptcha.com
+    - challenges.cloudflare.com
+    signToActivityPubGet: true
+  docker.env.tpl: |
+    POSTGRES_USER="$DATABASE_USER"
+    POSTGRES_PASSWORD="$DATABASE_PASS"
+    POSTGRES_DB="$DATABASE_DATABASE"
