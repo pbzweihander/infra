@@ -26,7 +26,7 @@ spec:
         command:
         - sh
         - -c
-        - 'cat /mnt/default.yml.tpl | envsubst > /mnt/default.yml && cat /mnt/docker.env.tpl | envsubst > /mnt/docker.env'
+        - 'cat /mnt/config-tpl/default.yml.tpl | envsubst > /mnt/config/default.yml && cat /mnt/config-tpl/docker.env.tpl | envsubst > /mnt/config/docker.env'
         env:
         - name: OP_SERVICE_ACCOUNT_TOKEN
           valueFrom:
@@ -65,8 +65,10 @@ spec:
           value: {{ .Values.meilisearch.index | quote }}
         volumeMounts:
         - name: config
-          mountPath: /mnt
+          mountPath: /mnt/config
           readOnly: false
+        - name: config-tpl
+          mountPath: /mnt/config-tpl
       containers:
       - name: web
         image: "{{ .Values.web.image.repository }}:{{ .Values.web.image.tag }}"
@@ -88,7 +90,7 @@ spec:
         - name: _STUB # required by 1password
           value: stub
       volumes:
-      - name: config
+      - name: config-tpl
         configMap:
           name: {{ include "misskey.fullname" . }}-web
           items:
@@ -96,6 +98,8 @@ spec:
             path: default.yml.tpl
           - key: docker.env.tpl
             path: docker.env.tpl
+      - name: config
+        emptyDir: {}
       topologySpreadConstraints:
       - maxSkew: 1
         topologyKey: topology.kubernetes.io/zone
