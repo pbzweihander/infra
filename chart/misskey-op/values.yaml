@@ -45,5 +45,5 @@ meilisearch:
   ssl: "true"
   index: ""
 
-1password:
+onepassword:
   serviceAccountName: ""

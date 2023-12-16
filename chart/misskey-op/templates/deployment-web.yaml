@@ -31,7 +31,7 @@ spec:
         - name: OP_SERVICE_ACCOUNT_TOKEN
           valueFrom:
             secretKeyRef:
-              name: {{ .Values.1password.serviceAccountName }}
+              name: {{ .Values.onepassword.serviceAccountName }}
               key: token
         - name: URL
           value: {{ .Values.url }}
