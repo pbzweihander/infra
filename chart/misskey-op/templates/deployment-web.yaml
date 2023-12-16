@@ -34,35 +34,35 @@ spec:
               name: {{ .Values.onepassword.serviceAccountName }}
               key: token
         - name: URL
-          value: {{ .Values.url }}
+          value: {{ .Values.url | quote }}
         - name: PORT
-          value: {{ .Values.web.port }}
+          value: {{ .Values.web.port | quote }}
         - name: DATABASE_HOST
-          value: {{ .Values.database.host }}
+          value: {{ .Values.database.host | quote }}
         - name: DATABASE_PORT
-          value: {{ .Values.database.host }}
+          value: {{ .Values.database.host | quote }}
         - name: DATABASE_DATABASE
-          value: {{ .Values.database.database }}
+          value: {{ .Values.database.database | quote }}
         - name: DATABASE_USER
-          value: {{ .Values.database.username }}
+          value: {{ .Values.database.username | quote }}
         - name: DATABASE_PASS
-          value: {{ .Values.database.password }}
+          value: {{ .Values.database.password | quote }}
         - name: REDIS_HOST
-          value: {{ .Values.redis.host }}
+          value: {{ .Values.redis.host | quote }}
         - name: REDIS_PORT
-          value: {{ .Values.redis.port }}
+          value: {{ .Values.redis.port | quote }}
         - name: REDIS_PASS
-          value: {{ .Values.redis.password }}
+          value: {{ .Values.redis.password | quote }}
         - name: MEILISEARCH_HOST
-          value: {{ .Values.meilisearch.host }}
+          value: {{ .Values.meilisearch.host | quote }}
         - name: MEILISEARCH_PORT
-          value: {{ .Values.meilisearch.port }}
+          value: {{ .Values.meilisearch.port | quote }}
         - name: MEILISEARCH_API_KEY
-          value: {{ .Values.meilisearch.apiKey }}
+          value: {{ .Values.meilisearch.apiKey | quote }}
         - name: MEILISEARCH_SSL
-          value: {{ .Values.meilisearch.ssl }}
+          value: {{ .Values.meilisearch.ssl | quote }}
         - name: MEILISEARCH_INDEX
-          value: {{ .Values.meilisearch.index }}
+          value: {{ .Values.meilisearch.index | quote }}
         volumeMounts:
         - name: config
           mountPath: /mnt
