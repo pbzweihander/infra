@@ -92,10 +92,10 @@ spec:
         configMap:
           name: {{ include "misskey.fullname" . }}-web
           items:
-          - key: default.yml
-            path: default.yml
-          - key: docker.env
-            path: docker.env
+          - key: default.yml.tpl
+            path: default.yml.tpl
+          - key: docker.env.tpl
+            path: docker.env.tpl
       topologySpreadConstraints:
       - maxSkew: 1
         topologyKey: topology.kubernetes.io/zone
