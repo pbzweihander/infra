@@ -84,6 +84,7 @@ spec:
         volumeMounts:
         - name: config
           mountPath: /misskey/.config
+        env: [] # required by 1password
       volumes:
       - name: config
         configMap:
