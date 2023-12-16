@@ -73,8 +73,6 @@ spec:
           value: {{ .Values.meilisearch.port | quote }}
         - name: MEILISEARCH_API_KEY
           value: {{ .Values.meilisearch.apiKey | quote }}
-        - name: MEILISEARCH_SSL
-          value: {{ .Values.meilisearch.ssl | quote }}
         - name: MEILISEARCH_INDEX
           value: {{ .Values.meilisearch.index | quote }}
       volumes:

@@ -42,7 +42,6 @@ meilisearch:
   host: ""
   port: 7700
   apiKey: ""
-  ssl: "true"
   index: ""
 
 onepassword:
