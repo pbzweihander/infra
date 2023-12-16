@@ -14,19 +14,33 @@ spec:
   template:
     metadata:
       annotations:
-        operator.1password.io/inject: config-generator
+        operator.1password.io/inject: web
       labels:
         {{- include "misskey.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: web
     spec:
       serviceAccountName: {{ include "misskey.fullname" . }}
-      initContainers:
-      - name: config-generator
-        image: bhgedigital/envsubst
+      containers:
+      - name: web
+        image: "{{ .Values.web.image.repository }}:{{ .Values.web.image.tag }}"
+        imagePullPolicy: {{ .Values.web.image.pullPolicy }}
         command:
         - sh
         - -c
-        - 'cat /mnt/config-tpl/default.yml.tpl | envsubst > /mnt/config/default.yml && cat /mnt/config-tpl/docker.env.tpl | envsubst > /mnt/config/docker.env'
+        - 'cat /mnt/config-tpl/default.yml.tpl | envsubst > /misskey/.config/default.yml && cat /mnt/config-tpl/docker.env.tpl | envsubst > /misskey/.config/docker.env && pnpm run migrateandstart'
+        ports:
+        - name: http
+          containerPort: {{ .Values.web.port }}
+          protocol: TCP
+        readinessProbe:
+          httpGet:
+            path: /
+            port: http
+        resources:
+          {{- toYaml .Values.web.resources | nindent 10 }}
+        volumeMounts:
+        - name: config-tpl
+          mountPath: /mnt
         env:
         - name: OP_SERVICE_ACCOUNT_TOKEN
           valueFrom:
@@ -63,43 +77,15 @@ spec:
           value: {{ .Values.meilisearch.ssl | quote }}
         - name: MEILISEARCH_INDEX
           value: {{ .Values.meilisearch.index | quote }}
-        volumeMounts:
-        - name: config
-          mountPath: /mnt/config
-          readOnly: false
-        - name: config-tpl
-          mountPath: /mnt/config-tpl
-      containers:
-      - name: web
-        image: "{{ .Values.web.image.repository }}:{{ .Values.web.image.tag }}"
-        imagePullPolicy: {{ .Values.web.image.pullPolicy }}
-        ports:
-        - name: http
-          containerPort: {{ .Values.web.port }}
-          protocol: TCP
-        readinessProbe:
-          httpGet:
-            path: /
-            port: http
-        resources:
-          {{- toYaml .Values.web.resources | nindent 10 }}
-        volumeMounts:
-        - name: config
-          mountPath: /misskey/.config
-        env: 
-        - name: _STUB # required by 1password
-          value: stub
       volumes:
       - name: config-tpl
         configMap:
-          name: {{ include "misskey.fullname" . }}-web
+          name: {{ include "misskey.fullname" . }}-config-tpl
           items:
           - key: default.yml.tpl
             path: default.yml.tpl
           - key: docker.env.tpl
             path: docker.env.tpl
-      - name: config
-        emptyDir: {}
       topologySpreadConstraints:
       - maxSkew: 1
         topologyKey: topology.kubernetes.io/zone
