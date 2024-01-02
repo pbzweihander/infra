@@ -119,7 +119,7 @@ resource "kubectl_manifest" "karpenter_node_pool" {
             values: ["t3a"]
           - key: "karpenter.k8s.aws/instance-size"
             operator: In
-            values: ["small", "medium", "large", "xlarge", "2xlarge"]
+            values: ["medium", "large", "xlarge", "2xlarge"]
           - key: "topology.kubernetes.io/zone"
             operator: In
             values: ["ap-northeast-1a", "ap-northeast-1d"]
