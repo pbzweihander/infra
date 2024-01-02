@@ -19,14 +19,11 @@ resource "helm_release" "argocd" {
   wait = false
 
   values = [yamlencode({
-    redis-ha = {
-      enabled = true
-    }
     controller = {
       replicas = 1
     }
     server = {
-      replicas = 2
+      replicas = 1
       ingress = var.argocd_ingress_host == "" ? null : {
         enabled          = true
         ingressClassName = "alb"
@@ -40,10 +37,10 @@ resource "helm_release" "argocd" {
       }
     }
     repoServer = {
-      replicas = 2
+      replicas = 1
     }
     applicationSet = {
-      replicaCount = 2
+      replicaCount = 1
     }
     configs = {
       params = {
