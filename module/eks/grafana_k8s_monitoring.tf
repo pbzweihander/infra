@@ -25,7 +25,7 @@ resource "helm_release" "grafana_k8s_monitoring" {
         ]
       }
     }
-    "promethues-node-exporter" = {
+    "prometheus-node-exporter" = {
       tolerations = [
         {
           key      = "eks.amazonaws.com/compute-type"
