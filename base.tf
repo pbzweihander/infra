@@ -82,7 +82,17 @@ provider "kubernetes" {
 
   host                   = module.strike_witches_eks.eks_cluster_endpoint
   cluster_ca_certificate = base64decode(module.strike_witches_eks.eks_cluster_certificate_authority_data)
-  token                  = module.strike_witches_eks.eks_cluster_auth_token
+
+  exec {
+    api_version = "client.authentication.k8s.io/v1beta1"
+    command     = "aws"
+    args = [
+      "eks",
+      "get-token",
+      "--cluster-name",
+      module.strike_witches_eks.eks_cluster_name,
+    ]
+  }
 }
 
 provider "helm" {
@@ -91,7 +101,17 @@ provider "helm" {
   kubernetes {
     host                   = module.strike_witches_eks.eks_cluster_endpoint
     cluster_ca_certificate = base64decode(module.strike_witches_eks.eks_cluster_certificate_authority_data)
-    token                  = module.strike_witches_eks.eks_cluster_auth_token
+
+    exec {
+      api_version = "client.authentication.k8s.io/v1beta1"
+      command     = "aws"
+      args = [
+        "eks",
+        "get-token",
+        "--cluster-name",
+        module.strike_witches_eks.eks_cluster_name,
+      ]
+    }
   }
 
   experiments {
@@ -104,8 +124,19 @@ provider "kubectl" {
 
   host                   = module.strike_witches_eks.eks_cluster_endpoint
   cluster_ca_certificate = base64decode(module.strike_witches_eks.eks_cluster_certificate_authority_data)
-  token                  = module.strike_witches_eks.eks_cluster_auth_token
-  load_config_file       = false
+
+  exec {
+    api_version = "client.authentication.k8s.io/v1beta1"
+    command     = "aws"
+    args = [
+      "eks",
+      "get-token",
+      "--cluster-name",
+      module.strike_witches_eks.eks_cluster_name,
+    ]
+  }
+
+  load_config_file = false
 }
 
 provider "cloudflare" {

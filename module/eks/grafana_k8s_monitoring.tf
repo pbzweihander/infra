@@ -1,7 +1,7 @@
 resource "helm_release" "grafana_k8s_monitoring" {
   repository = "https://grafana.github.io/helm-charts"
   chart      = "k8s-monitoring"
-  version    = "0.2.4"
+  version    = "0.7.3"
 
   name             = "grafana-k8s-monitoring"
   namespace        = "grafana"
@@ -12,6 +12,28 @@ resource "helm_release" "grafana_k8s_monitoring" {
   values = [yamlencode({
     cluster = {
       name = var.cluster_name
+    }
+    "grafana-agent-logs" = {
+      controller = {
+        tolerations = [
+          {
+            key      = "eks.amazonaws.com/compute-type"
+            operator = "Equal"
+            value    = "fargate"
+            effect   = "NoExecute"
+          },
+        ]
+      }
+    }
+    "promethues-node-exporter" = {
+      tolerations = [
+        {
+          key      = "eks.amazonaws.com/compute-type"
+          operator = "Equal"
+          value    = "fargate"
+          effect   = "NoExecute"
+        },
+      ]
     }
     externalServices = {
       prometheus = {

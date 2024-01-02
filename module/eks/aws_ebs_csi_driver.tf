@@ -48,7 +48,7 @@ resource "helm_release" "aws_ebs_csi_driver" {
 
   values = [yamlencode({
     controller = {
-      k8sTagClusterId = module.eks.cluster_id
+      k8sTagClusterId = module.eks.cluster_name
       serviceAccount = {
         name = local.aws_ebs_csi_driver_serviceaccount_name
         annotations = {

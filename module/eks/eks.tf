@@ -1,68 +1,91 @@
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "~> 18.30.2"
+  version = "~> 19.21.0"
 
   cluster_name    = var.cluster_name
   cluster_version = var.kubernetes_version
+
+  cluster_endpoint_public_access = true
+
+  cluster_addons = {
+    kube-proxy = {}
+    vpc-cni    = {}
+    coredns = {
+      configuration_values = jsonencode({
+        computeType = "Fargate"
+        # Ensure that we fully utilize the minimum amount of resources that are supplied by
+        # Fargate https://docs.aws.amazon.com/eks/latest/userguide/fargate-pod-configuration.html
+        # Fargate adds 256 MB to each pod's memory reservation for the required Kubernetes
+        # components (kubelet, kube-proxy, and containerd). Fargate rounds up to the following
+        # compute configuration that most closely matches the sum of vCPU and memory requests in
+        # order to ensure pods always have the resources that they need to run.
+        resources = {
+          limits = {
+            cpu = "0.25"
+            # We are targeting the smallest Task size of 512Mb, so we subtract 256Mb from the
+            # request/limit to ensure we can fit within that task
+            memory = "256M"
+          }
+          requests = {
+            cpu = "0.25"
+            # We are targeting the smallest Task size of 512Mb, so we subtract 256Mb from the
+            # request/limit to ensure we can fit within that task
+            memory = "256M"
+          }
+        }
+      })
+    }
+  }
 
   vpc_id     = var.vpc_id
   subnet_ids = var.subnet_ids
 
   create_aws_auth_configmap = true
   manage_aws_auth_configmap = true
+  aws_auth_roles = [
+    # required by karpenter
+    {
+      rolearn  = module.karpenter.role_arn
+      username = "system:node:{{EC2PrivateDNSName}}"
+      groups = [
+        "system:bootstrappers",
+        "system:nodes",
+      ]
+    },
+  ]
   aws_auth_users = [
     {
       userarn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
       groups  = ["system:masters"]
-    }
+    },
   ]
 
-  enable_irsa = true
+  create_cluster_security_group = false
+  create_node_security_group    = false
 
-  node_security_group_additional_rules = {
-    ingress_self_all = {
-      description = "Node to node all ports/protocols"
-      protocol    = "-1"
-      from_port   = 0
-      to_port     = 0
-      type        = "ingress"
-      self        = true
-    }
-    ingress_master_all = {
-      description                   = "Control plane to node all ports/protocols"
-      protocol                      = "-1"
-      from_port                     = 0
-      to_port                       = 0
-      type                          = "ingress"
-      source_cluster_security_group = true
-    }
-    egress_all = {
-      description      = "Node all egress"
-      protocol         = "-1"
-      from_port        = 0
-      to_port          = 0
-      type             = "egress"
-      cidr_blocks      = ["0.0.0.0/0"]
-      ipv6_cidr_blocks = ["::/0"]
-    }
-    ingress_karpenter_webhook_tcp = {
-      description                   = "Control plane invoke Karpenter webhook"
-      protocol                      = "tcp"
-      from_port                     = 8443
-      to_port                       = 8443
-      type                          = "ingress"
-      source_cluster_security_group = true
-    }
+  fargate_profile_defaults = {
+    subnet_ids = var.subnet_ids
   }
 
-  eks_managed_node_group_defaults = var.eks_managed_node_group_defaults
-  eks_managed_node_groups         = var.eks_managed_node_groups
+  fargate_profiles = {
+    karpenter = {
+      selectors = [
+        { namespace = local.karpenter_namespace },
+      ]
+    }
+    coredns = {
+      selectors = [
+        {
+          namespace = "kube-system"
+          labels = {
+            "eks.amazonaws.com/component" = "coredns"
+          }
+        },
+      ]
+    }
+  }
 
   tags = {
     "karpenter.sh/discovery" = var.cluster_name
   }
-}
-
-data "aws_eks_cluster_auth" "this" {
-  name = module.eks.cluster_id
 }
