@@ -12,7 +12,7 @@ spec:
     server: https://kubernetes.default.svc
   source:
     repoURL: https://github.com/pbzweihander/infra.git
-    path: chart/misskey
+    path: chart/misskey-op
     targetRevision: HEAD
     helm:
       values: |
@@ -21,7 +21,7 @@ spec:
           replicaCount: 3
           image:
             repository: ghcr.io/pbzweihander/misskey
-            tag: 2023.12.0-yurigarden.pre0
+            tag: 2023.12.2-yurigarden.0
           resources:
             requests:
               cpu: 300m
@@ -45,20 +45,21 @@ spec:
               pathType: Prefix
           tls: false
         database:
-          host: "${database.host}"
-          port: "${database.port}"
-          database: "${database.database}"
-          username: "${database.username}"
-          password: "${database.password}"
+          host: op://strike-witches/yuri-garden-rds/hostname
+          port: op://strike-witches/yuri-garden-rds/port
+          database: op://strike-witches/yuri-garden-rds/database
+          username: op://strike-witches/yuri-garden-rds/username
+          password: op://strike-witches/yuri-garden-rds/password
         redis:
-          host: "${redis.host}"
-          password: "${redis.password}"
+          host: op://strike-witches/yuri-garden-elasticache/hostname
+          password: op://strike-witches/yuri-garden-elasticache/password
         meilisearch:
           host: yuri-garden-meilisearch
           port: 7700
-          apiKey: "${meilisearch.apiKey}"
-          ssl: "false"
+          apiKey: op://strike-witches/yuri-garden-meilisearch/password
           index: misskey
+        onepassword:
+          serviceAccountName: onepassword-service-account
   syncPolicy:
     automated:
       prune: true

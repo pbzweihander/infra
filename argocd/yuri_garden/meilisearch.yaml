@@ -18,7 +18,8 @@ spec:
       values: |
         environment:
           MEILI_ENV: production
-          MEILI_MASTER_KEY: "${master_key}"
+        auth:
+          existingMasterKeySecret: yuri-garden-meilisearch-master-key
         persistence:
           enabled: true
           size: 50Gi

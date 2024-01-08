@@ -90,6 +90,21 @@ resource "aws_iam_access_key" "yuri_garden_ses" {
   user = aws_iam_user.yuri_garden_ses.name
 }
 
+resource "onepassword_item" "yuri_garden_ses" {
+  vault = data.onepassword_vault.strike_witches.uuid
+
+  title    = "yuri-garden-ses"
+  category = "login"
+  username = aws_iam_access_key.yuri_garden_ses.id
+  password = aws_iam_access_key.yuri_garden_ses.ses_smtp_password_v4
+
+  lifecycle {
+    ignore_changes = [
+      password,
+    ]
+  }
+}
+
 resource "random_password" "yuri_garden_rds_master_password" {
   length  = 42
   special = false
@@ -132,6 +147,19 @@ module "yuri_garden_rds" {
   instances = {
     1 = {}
   }
+}
+
+resource "onepassword_item" "yuri_garden_rds" {
+  vault = data.onepassword_vault.strike_witches.uuid
+
+  title    = "yuri-garden-rds"
+  category = "database"
+  type     = "postgresql"
+  hostname = module.yuri_garden_rds.cluster_endpoint
+  port     = module.yuri_garden_rds.cluster_port
+  database = module.yuri_garden_rds.cluster_database_name
+  username = module.yuri_garden_rds.cluster_master_username
+  password = random_password.yuri_garden_rds_master_password.result
 }
 
 resource "aws_security_group" "yuri_garden_redis" {
@@ -186,6 +214,19 @@ resource "aws_elasticache_replication_group" "yuri_garden" {
   apply_immediately = true
 }
 
+resource "onepassword_item" "yuri_garden_elasticache" {
+  vault = data.onepassword_vault.strike_witches.uuid
+
+  title    = "yuri-garden-elasticache"
+  category = "database"
+  type     = "other"
+  hostname = aws_elasticache_replication_group.yuri_garden.primary_endpoint_address
+  port     = 6379
+  database = ""
+  username = ""
+  password = ""
+}
+
 resource "cloudflare_r2_bucket" "yuri_garden" {
   account_id = data.cloudflare_accounts.pbzweihander.accounts[0].id
   name       = "yuri-garden"
@@ -199,6 +240,7 @@ resource "kubernetes_namespace" "yuri_garden" {
     name = "yuri-garden"
     labels = {
       "elbv2.k8s.aws/pod-readiness-gate-inject" = "enabled"
+      "secrets-injection"                       = "enabled"
     }
   }
 }
@@ -217,47 +259,39 @@ resource "random_password" "yuri_garden_meilisearch_master_key" {
   length = 42
 }
 
-resource "kubectl_manifest" "yuri_garden_meilisearch" {
-  provider = kubectl.strike_witches
+resource "kubernetes_secret_v1" "yuri_garden_meilisearch_master_key" {
+  provider = kubernetes.strike_witches
 
-  depends_on = [
-    kubectl_manifest.yuri_garden_project,
-  ]
-
-  yaml_body = templatefile(
-    "argocd/yuri_garden/meilisearch.yaml",
-    {
-      master_key = random_password.yuri_garden_meilisearch_master_key.result
-    },
-  )
+  metadata {
+    name      = "yuri-garden-meilisearch-master-key"
+    namespace = kubernetes_namespace.yuri_garden.metadata[0].name
+  }
+  type = "Opaque"
+  data = {
+    MEILI_MASTER_KEY = random_password.yuri_garden_meilisearch_master_key.result
+  }
 }
 
-resource "kubectl_manifest" "yuri_garden_misskey" {
-  provider = kubectl.strike_witches
+resource "onepassword_item" "yuri_garden_meilisearch" {
+  vault = data.onepassword_vault.strike_witches.uuid
 
-  depends_on = [
-    kubectl_manifest.yuri_garden_project,
-  ]
+  title    = "yuri-garden-meilisearch"
+  category = "password"
+  password = random_password.yuri_garden_meilisearch_master_key.result
+}
 
-  yaml_body = templatefile(
-    "argocd/yuri_garden/misskey.yaml",
-    {
-      database = {
-        host     = module.yuri_garden_rds.cluster_endpoint
-        port     = module.yuri_garden_rds.cluster_port
-        database = module.yuri_garden_rds.cluster_database_name
-        username = module.yuri_garden_rds.cluster_master_username
-        password = random_password.yuri_garden_rds_master_password.result
-      }
-      redis = {
-        host     = aws_elasticache_replication_group.yuri_garden.primary_endpoint_address
-        password = ""
-      }
-      meilisearch = {
-        apiKey = random_password.yuri_garden_meilisearch_master_key.result
-      }
-    },
-  )
+
+resource "kubernetes_secret_v1" "yuri_garden_onepassword_service_account" {
+  provider = kubernetes.strike_witches
+
+  metadata {
+    name      = "onepassword-service-account"
+    namespace = kubernetes_namespace.yuri_garden.metadata[0].name
+  }
+  type = "Opaque"
+  data = {
+    token = var.onepassword_service_account_token_strike_witches
+  }
 }
 
 resource "aws_acm_certificate" "wildcard_contest_yuri_garden" {
