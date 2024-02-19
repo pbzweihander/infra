@@ -12,7 +12,7 @@ spec:
     protocol: TCP
     name: http
   - port: {{ .Values.web.filter.service.port }}
-    targetPort: http
+    targetPort: http-filter
     protocol: TCP
     name: http-filter
   selector:

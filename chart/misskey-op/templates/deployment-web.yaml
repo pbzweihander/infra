@@ -83,7 +83,7 @@ spec:
         - --ap-server-port
         - {{ .Values.web.port | quote }}
         ports:
-        - name: http
+        - name: http-filter
           containerPort: 21200
           protocol: TCP
         resources:
