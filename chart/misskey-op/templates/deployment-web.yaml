@@ -14,7 +14,7 @@ spec:
   template:
     metadata:
       annotations:
-        operator.1password.io/inject: web
+        operator.1password.io/inject: web,filter
       labels:
         {{- include "misskey.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: web
