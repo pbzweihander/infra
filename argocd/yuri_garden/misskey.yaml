@@ -21,7 +21,7 @@ spec:
           replicaCount: 3
           image:
             repository: ghcr.io/pbzweihander/misskey
-            tag: 2023.12.2-yurigarden.0
+            tag: 2024.2.0-yurigarden.0
           resources:
             requests:
               cpu: 300m
@@ -29,6 +29,14 @@ spec:
             limits:
               cpu: 300m
               memory: 1.2Gi
+          filter:
+            resources:
+              requests:
+                cpu: 100m
+                memory: 300Mi
+              limits:
+                cpu: 100m
+                memory: 300Mi
         ingress:
           enabled: true
           className: alb
@@ -38,12 +46,7 @@ spec:
             alb.ingress.kubernetes.io/target-group-attributes: stickiness.enabled=true,stickiness.lb_cookie.duration_seconds=60
             alb.ingress.kubernetes.io/listen-ports: "[{\"HTTP\": 80}, {\"HTTPS\":443}]"
             alb.ingress.kubernetes.io/ssl-redirect: "443"
-          hosts:
-          - host: yuri.garden
-            paths:
-            - path: "/"
-              pathType: Prefix
-          tls: false
+          host: yuri.garden
         database:
           host: op://strike-witches/yuri-garden-rds/hostname
           port: op://strike-witches/yuri-garden-rds/port
