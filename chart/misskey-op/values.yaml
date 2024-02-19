@@ -16,12 +16,22 @@ web:
     type: ClusterIP
     port: 80
 
+  filter:
+    image:
+      repository: ghcr.io/pbzweihander/spam-musubi
+      pullPolicy: Always
+      tag: edge
+
+    resources: {}
+
+    service:
+      port: 8080
+
 ingress:
   enabled: false
   annotations: {}
-  className:
-  hosts: []
-  tls:
+  className: ""
+  host: ""
 
 serviceAccount:
   annotations: {}
