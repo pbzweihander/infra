@@ -80,6 +80,8 @@ spec:
         imagePullPolicy: {{ .Values.web.filter.image.pullPolicy }}
         command:
         - spam-musubi
+        - --bind-address
+        - "0.0.0.0"
         - --ap-server-port
         - {{ .Values.web.port | quote }}
         ports:
