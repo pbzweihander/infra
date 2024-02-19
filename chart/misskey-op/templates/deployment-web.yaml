@@ -78,7 +78,8 @@ spec:
       - name: filter
         image: "{{ .Values.web.filter.image.repository }}:{{ .Values.web.filter.image.tag }}"
         imagePullPolicy: {{ .Values.web.filter.image.pullPolicy }}
-        args:
+        command:
+        - spam-musubi
         - --ap-server-port
         - {{ .Values.web.port | quote }}
         ports:
