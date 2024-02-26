@@ -34,6 +34,7 @@ data:
     - hcaptcha.com
     - challenges.cloudflare.com
     signToActivityPubGet: true
+    proxyRemoteFiles: false
   docker.env.tpl: |
     POSTGRES_USER="$DATABASE_USER"
     POSTGRES_PASSWORD="$DATABASE_PASS"
