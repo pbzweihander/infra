@@ -23,7 +23,7 @@ resource "kubernetes_deployment" "rust_kr_discord_irc" {
     labels    = local.rust_kr_discord_irc_selector_labels
   }
   spec {
-    replicas = 1
+    replicas = 0
     selector {
       match_labels = local.rust_kr_discord_irc_selector_labels
     }
