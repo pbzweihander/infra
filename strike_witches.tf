@@ -4,7 +4,7 @@ locals {
 
 module "strike_witches_vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 5.0.0"
+  version = "~> 5.8.1"
 
   name = local.strike_witches_name
   cidr = "10.0.0.0/16"
