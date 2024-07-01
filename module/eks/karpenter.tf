@@ -23,7 +23,7 @@ module "karpenter" {
 resource "helm_release" "karpenter" {
   repository = "oci://public.ecr.aws/karpenter"
   chart      = "karpenter"
-  version    = "v0.33.0"
+  version    = "0.37.0"
 
   namespace        = local.karpenter_namespace
   name             = "karpenter"
