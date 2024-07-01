@@ -32,9 +32,6 @@ module "strike_witches_vpc" {
 
   create_egress_only_igw = true
 
-  enable_nat_gateway     = true
-  one_nat_gateway_per_az = true
-
   public_subnet_tags = {
     "kubernetes.io/cluster/${local.strike_witches_name}" = "shared"
     "kubernetes.io/role/elb"                             = 1
@@ -47,6 +44,25 @@ module "strike_witches_vpc" {
   }
 
   map_public_ip_on_launch = true
+}
+
+module "strike_witches_fck_nat" {
+  count = length(module.strike_witches_vpc.public_subnets)
+
+  source  = "RaJiska/fck-nat/aws"
+  version = "~> 1.2.0"
+
+  name      = "${local.strike_witches_name}-${count.index}"
+  vpc_id    = module.strike_witches_vpc.vpc_id
+  subnet_id = module.strike_witches_vpc.public_subnets[count.index]
+
+  instance_type        = "t4g.small"
+  ha_mode              = true
+  use_cloudwatch_agent = true
+  use_spot_instances   = true
+
+  update_route_table = true
+  route_table_id     = module.strike_witches_vpc.private_route_table_ids[count.index]
 }
 
 resource "aws_acm_certificate" "wildcard_strike_witches_dev" {
