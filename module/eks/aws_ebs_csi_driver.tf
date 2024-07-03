@@ -38,7 +38,7 @@ resource "aws_iam_role_policy_attachment" "aws_ebs_csi_driver" {
 resource "helm_release" "aws_ebs_csi_driver" {
   repository = "https://kubernetes-sigs.github.io/aws-ebs-csi-driver"
   chart      = "aws-ebs-csi-driver"
-  version    = "2.12.1"
+  version    = "2.32.0"
 
   namespace        = local.aws_ebs_csi_driver_namespace
   name             = "aws-ebs-csi-driver"
