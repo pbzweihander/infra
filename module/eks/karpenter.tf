@@ -92,6 +92,17 @@ resource "kubectl_manifest" "karpenter_node_class" {
           karpenter.sh/discovery: ${module.eks.cluster_name}
       tags:
         karpenter.sh/discovery: ${module.eks.cluster_name}
+      blockDeviceMappings:
+      - deviceName: /dev/xvda
+        ebs:
+          volumeSize: 4Gi
+          volumeType: gp3
+          encrypted: true
+      - deviceName: /dev/xvdb
+        ebs:
+          volumeSize: 50Gi
+          volumeType: gp3
+          encrypted: true
   YAML
 }
 
