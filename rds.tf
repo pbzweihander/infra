@@ -3,7 +3,7 @@ data "aws_rds_engine_version" "aurora_postgresql_14_5" {
   version = "14.5"
 }
 
-data "aws_rds_engine_version" "aurora_postgresql_14_6" {
+data "aws_rds_engine_version" "aurora_postgresql_14_9" {
   engine  = "aurora-postgresql"
-  version = "14.6"
+  version = "14.9"
 }

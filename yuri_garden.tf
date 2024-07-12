@@ -115,8 +115,8 @@ module "yuri_garden_rds" {
   version = "~> 8.3.1"
 
   name                        = "yuri-garden"
-  engine                      = data.aws_rds_engine_version.aurora_postgresql_14_6.engine
-  engine_version              = data.aws_rds_engine_version.aurora_postgresql_14_6.version
+  engine                      = data.aws_rds_engine_version.aurora_postgresql_14_9.engine
+  engine_version              = data.aws_rds_engine_version.aurora_postgresql_14_9.version
   master_username             = "yurigarden"
   manage_master_user_password = false
   master_password             = random_password.yuri_garden_rds_master_password.result
