@@ -83,6 +83,16 @@ module "eks" {
         },
       ]
     }
+    ondemand = {
+      selectors = [
+        {
+          namespace = "*"
+          labels = {
+            "enable-fargate" = "true"
+          }
+        },
+      ]
+    }
   }
 
   tags = {
