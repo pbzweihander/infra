@@ -75,37 +75,6 @@ spec:
           value: {{ .Values.meilisearch.apiKey | quote }}
         - name: MEILISEARCH_INDEX
           value: {{ .Values.meilisearch.index | quote }}
-      - name: filter
-        image: "{{ .Values.web.filter.image.repository }}:{{ .Values.web.filter.image.tag }}"
-        imagePullPolicy: {{ .Values.web.filter.image.pullPolicy }}
-        command:
-        - spam-musubi
-        - --bind-address
-        - "0.0.0.0"
-        - --ap-server-port
-        - {{ .Values.web.port | quote }}
-        ports:
-        - name: http-filter
-          containerPort: 21200
-          protocol: TCP
-        resources:
-          {{- toYaml .Values.web.filter.resources | nindent 10 }}
-        env:
-        - name: OP_SERVICE_ACCOUNT_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.onepassword.serviceAccountName }}
-              key: token
-        - name: DB_HOST
-          value: {{ .Values.database.host | quote }}
-        - name: DB_PORT
-          value: {{ .Values.database.port | quote }}
-        - name: DB_NAME
-          value: {{ .Values.database.database | quote }}
-        - name: DB_USER
-          value: {{ .Values.database.username | quote }}
-        - name: DB_PASSWORD
-          value: {{ .Values.database.password | quote }}
       volumes:
       - name: config-tpl
         configMap:
