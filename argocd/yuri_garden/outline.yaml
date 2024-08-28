@@ -16,7 +16,7 @@ spec:
     targetRevision: HEAD
     helm:
       values: |
-        replicaCount: 3
+        replicaCount: 0
         image:
           tag: 0.72.0-pbzweihander.0
           pullPolicy: Always
@@ -47,6 +47,10 @@ spec:
         redis:
           auth:
             password: "${redis.password}"
+          master:
+            count: 0
+          replica:
+            replicaCount: 0
         s3:
           region: ap-northeast-1
           uploadBucketUrl: "https://${s3.bucket}.s3.ap-northeast-1.amazonaws.com"
