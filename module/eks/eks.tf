@@ -96,6 +96,8 @@ module "eks" {
     }
   }
 
+  cloudwatch_log_group_retention_in_days = 5
+
   tags = {
     "karpenter.sh/discovery" = var.cluster_name
   }
