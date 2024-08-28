@@ -16,6 +16,7 @@ spec:
     targetRevision: HEAD
     helm:
       values: |
+        replicaCount: 0
         image:
           pullPolicy: Always
           tag: latest
