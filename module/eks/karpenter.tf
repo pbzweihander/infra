@@ -32,6 +32,7 @@ resource "helm_release" "karpenter" {
   wait = false
 
   values = [yamlencode({
+    replicas = 1
     settings = {
       clusterName           = module.eks.cluster_name
       clusterEndpoint       = module.eks.cluster_endpoint
