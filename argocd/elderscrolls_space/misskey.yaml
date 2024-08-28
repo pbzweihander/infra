@@ -46,7 +46,8 @@ spec:
             alb.ingress.kubernetes.io/target-group-attributes: stickiness.enabled=true,stickiness.lb_cookie.duration_seconds=60
             alb.ingress.kubernetes.io/listen-ports: "[{\"HTTP\": 80}, {\"HTTPS\":443}]"
             alb.ingress.kubernetes.io/ssl-redirect: "443"
-          host: elderscrolls.space
+          hosts:
+          - elderscrolls.space
         database:
           host: op://strike-witches/elderscrolls-space-misskey-rds/hostname
           port: op://strike-witches/elderscrolls-space-misskey-rds/port
