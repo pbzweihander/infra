@@ -21,7 +21,7 @@ spec:
           replicaCount: 3
           image:
             repository: ghcr.io/pbzweihander/misskey
-            tag: 2024.2.0-yurigarden.0
+            tag: 2024.8.0-yurigarden.0
           resources:
             requests:
               cpu: 300m
