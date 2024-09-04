@@ -1,0 +1,44 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  namespace: argocd
+  name: nineadw-wikijs
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: nineadw
+  destination:
+    namespace: nineadw
+    server: https://kubernetes.default.svc
+  source:
+    repoURL: https://charts.js.wiki
+    chart: wiki
+    targetRevision: 2.2.21
+    helm:
+      values: |
+        image:
+          tag: 2.5
+        imagePullPolicy: Always
+        ingress:
+          enabled: true
+          className: alb
+          annotations:
+            alb.ingress.kubernetes.io/scheme: internet-facing
+            alb.ingress.kubernetes.io/target-type: ip
+            alb.ingress.kubernetes.io/target-group-attributes: stickiness.enabled=true,stickiness.lb_cookie.duration_seconds=60
+            alb.ingress.kubernetes.io/listen-ports: "[{\"HTTP\": 80}, {\"HTTPS\":443}]"
+            alb.ingress.kubernetes.io/ssl-redirect: "443"
+          hosts:
+          - host: wiki.9adw.org
+            paths:
+            - path: "/"
+              pathType: Prefix
+          postgresql:
+            persistence:
+              size: 20Gi
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+
