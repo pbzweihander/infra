@@ -143,6 +143,7 @@ module "strike_witches_eks" {
     "witches.dev",
     "tavern.house",
     "elderscrolls.space",
+    "9adw.org",
   ]
 
   argocd_ingress_host = "argocd.strike.witches.dev"
