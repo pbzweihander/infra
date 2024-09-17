@@ -16,6 +16,7 @@ spec:
     targetRevision: 2.2.21
     helm:
       values: |
+        replicaCount: 2
         image:
           tag: 2.5
         imagePullPolicy: Always
@@ -33,9 +34,10 @@ spec:
             paths:
             - path: "/"
               pathType: Prefix
-          postgresql:
-            persistence:
-              size: 20Gi
+        postgresql:
+          existingSecret: wikijs-postgresql-password
+          persistence:
+            size: 50Gi
   syncPolicy:
     automated:
       prune: true
