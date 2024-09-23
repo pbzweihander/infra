@@ -12,7 +12,6 @@ module "eks" {
     vpc-cni    = {}
     coredns = {
       configuration_values = jsonencode({
-        replicaCount = 1
         computeType  = "Fargate"
         # Ensure that we fully utilize the minimum amount of resources that are supplied by
         # Fargate https://docs.aws.amazon.com/eks/latest/userguide/fargate-pod-configuration.html
