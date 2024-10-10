@@ -12,7 +12,7 @@ module "eks" {
     vpc-cni    = {}
     coredns = {
       configuration_values = jsonencode({
-        computeType  = "Fargate"
+        computeType = "Fargate"
         # Ensure that we fully utilize the minimum amount of resources that are supplied by
         # Fargate https://docs.aws.amazon.com/eks/latest/userguide/fargate-pod-configuration.html
         # Fargate adds 256 MB to each pod's memory reservation for the required Kubernetes
