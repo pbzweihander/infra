@@ -16,6 +16,7 @@ spec:
     targetRevision: 0.3.0
     helm:
       values: |
+        replicaCount: "0"
         environment:
           MEILI_ENV: production
         auth:
