@@ -1,0 +1,70 @@
+url: https://yuri.garden
+
+replicaCount: 2
+
+image:
+  repository: ghcr.io/pbzweihander/misskey
+  pullPolicy: IfNotPresent
+  tag: ""
+
+resources:
+  requests:
+    cpu: "300m"
+    memory: "1.2Gi"
+  limits:
+    cpu: "300m"
+    memory: "1.2Gi"
+
+filter:
+  image:
+    repository: ghcr.io/pbzweihander/spam-musubi
+    pullPolicy: Always
+    tag: edge
+
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "300Mi"
+    limits:
+      cpu: "100m"
+      memory: "300Mi"
+
+  service:
+    port: 8080
+
+ingress:
+  enabled: true
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  className: traefik
+  host: yuri.garden
+  tls:
+  - secretName: yuri-garden-misskey-cert
+    hosts:
+    - yuri.garden
+
+database:
+  host: ""
+  port: 5432
+  database: ""
+  username: ""
+  password: ""
+
+redis:
+  auth:
+    password: ""
+  master:
+    persistence:
+      size: 40Gi
+  replica:
+    replicaCount: 0
+
+meilisearch:
+  fullnameOverride: yuri-garden-misskey-meilisearch
+  environment:
+    MEILI_MASTER_KEY: ""
+  persistence:
+    enabled: true
+    size: 50Gi
