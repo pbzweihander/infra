@@ -51,6 +51,7 @@ database:
   database: ""
   username: ""
   password: ""
+  extras: {}
 
 redis:
   auth:
