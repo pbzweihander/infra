@@ -27,6 +27,10 @@ resource "helm_release" "misskey" {
       database = neon_database.misskey.name
       username = neon_role.this.name
       password = neon_role.this.password
+      extras = {
+        ssl               = true
+        statement_timeout = 60 * 1000
+      }
     }
     redis = {
       auth = {

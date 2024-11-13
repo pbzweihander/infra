@@ -4,9 +4,16 @@ resource "neon_project" "this" {
   branch = {
     name = "main"
     endpoint = {
-      min_cu = 1
-      max_cu = 4
+      min_cu          = 1
+      max_cu          = 7
+      suspend_timeout = 300
     }
+  }
+
+  lifecycle {
+    ignore_changes = [
+      branch,
+    ]
   }
 }
 
