@@ -18,9 +18,9 @@ terraform {
       version = "2.16.1"
     }
 
-    vultr = {
-      source  = "vultr/vultr"
-      version = "2.21.0"
+    neon = {
+      source  = "terraform-community-providers/neon"
+      version = "0.1.8"
     }
 
     random = {
@@ -77,8 +77,8 @@ provider "helm" {
   }
 }
 
-provider "vultr" {
-  api_key = var.vultr_api_key
+provider "neon" {
+  token = var.neon_api_key
 }
 
 provider "cloudflare" {

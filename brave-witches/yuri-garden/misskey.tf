@@ -23,33 +23,10 @@ resource "helm_release" "misskey" {
       tag = "2024.8.0-yurigarden.0"
     }
     database = {
-      host     = vultr_database.misskey_202411_1.host
-      port     = vultr_database.misskey_202411_1.port
-      database = vultr_database.misskey_202411_1.dbname
-      username = vultr_database.misskey_202411_1.user
-      password = vultr_database.misskey_202411_1.password
-      extras = {
-        statement_timeout = 0
-        ssl = {
-          rejectUnauthorized = false
-        }
-      }
-      replicas = [
-        {
-          host     = vultr_database_replica.misskey_202411_1_0.host
-          port     = vultr_database_replica.misskey_202411_1_0.port
-          database = vultr_database_replica.misskey_202411_1_0.dbname
-          username = vultr_database_replica.misskey_202411_1_0.user
-          password = vultr_database_replica.misskey_202411_1_0.password
-        },
-        {
-          host     = vultr_database_replica.misskey_202411_1_1.host
-          port     = vultr_database_replica.misskey_202411_1_1.port
-          database = vultr_database_replica.misskey_202411_1_1.dbname
-          username = vultr_database_replica.misskey_202411_1_1.user
-          password = vultr_database_replica.misskey_202411_1_1.password
-        },
-      ]
+      host     = neon_project.this.branch.endpoint.host
+      database = neon_database.misskey.name
+      username = neon_role.this.name
+      password = neon_role.this.password
     }
     redis = {
       auth = {
