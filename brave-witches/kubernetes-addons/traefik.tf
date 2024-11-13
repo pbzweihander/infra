@@ -17,6 +17,12 @@ resource "helm_release" "traefik" {
         }
       }
     }
+    service = {
+      annotations = {
+        "service.beta.kubernetes.io/vultr-loadbalancer-sticky-session-enabled"     = "on"
+        "service.beta.kubernetes.io/vultr-loadbalancer-sticky-session-cookie-name" = "vultr-sticky"
+      }
+    }
   })]
 }
 
