@@ -27,7 +27,7 @@ spec:
           protocol: TCP
         startupProbe:
           httpGet:
-            path: /
+            path: /healthz
             port: http
           failureThreshold: 30
           periodSeconds: 10
