@@ -29,3 +29,17 @@ resource "neon_database" "misskey" {
   branch_id  = neon_project.this.branch.id
   owner_name = neon_role.this.name
 }
+
+resource "neon_endpoint" "misskey_0" {
+  project_id = neon_project.this.id
+  branch_id  = neon_project.this.branch.id
+  min_cu     = 1
+  max_cu     = 7
+
+  lifecycle {
+    ignore_changes = [
+      min_cu,
+      max_cu,
+    ]
+  }
+}

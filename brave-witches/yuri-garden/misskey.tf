@@ -25,13 +25,22 @@ resource "helm_release" "misskey" {
     }
     database = {
       host     = neon_project.this.branch.endpoint.host
+      port     = 5432
       database = neon_database.misskey.name
       username = neon_role.this.name
       password = neon_role.this.password
       extras = {
         ssl               = true
-        statement_timeout = 60 * 1000
       }
+      replicas = [
+        {
+          host     = neon_endpoint.misskey_0.host
+          port     = 5432
+          database = neon_database.misskey.name
+          username = neon_role.this.name
+          password = neon_role.this.password
+        },
+      ]
     }
     redis = {
       auth = {
