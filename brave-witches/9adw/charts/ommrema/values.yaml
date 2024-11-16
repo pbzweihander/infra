@@ -1,0 +1,41 @@
+replicaCount: 2
+
+image:
+  repository: ghcr.io/pbzweihander/ommrema
+  pullPolicy: Always
+  tag: latest
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: "100Mi"
+  limits:
+    memory: "100Mi"
+
+ingress:
+  enabled: true
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  className: traefik
+  host: ommrema.9adw.org
+  tls:
+  - secretName: nineadw-ommrema-cert
+    hosts:
+    - ommrema.9adw.org
+
+title: 9ADW
+url: https://ommrema.9adw.org
+jwtSecret:
+discord:
+  clientId:
+  clientSecret:
+  guildId:
+  guildRoleId:
+s3:
+  bucket:
+  accessKeyId:
+  secretAccessKey:
+  region:
+  endpoint:

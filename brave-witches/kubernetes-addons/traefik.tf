@@ -10,13 +10,6 @@ resource "helm_release" "traefik" {
   wait = false
 
   values = [yamlencode({
-    ports = {
-      web = {
-        redirectTo = {
-          port = "websecure"
-        }
-      }
-    }
     service = {
       annotations = {
         "service.beta.kubernetes.io/vultr-loadbalancer-sticky-session-enabled"     = "on"
