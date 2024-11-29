@@ -16,6 +16,15 @@ resource "helm_release" "traefik" {
         "service.beta.kubernetes.io/vultr-loadbalancer-sticky-session-cookie-name" = "vultr-sticky"
       }
     }
+    ports = {
+      websecure = {
+        transport = {
+          respondingTimeouts = {
+            readTimeout = 0
+          }
+        }
+      }
+    }
   })]
 }
 
