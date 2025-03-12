@@ -21,7 +21,7 @@ resource "helm_release" "misskey" {
   values = [yamlencode({
     replicaCount = 3
     image = {
-      tag = "2025.2.0-yurigarden.0"
+      tag = "2025.3.1-yurigarden.0"
     }
     database = {
       host     = neon_project.this.branch.endpoint.host
