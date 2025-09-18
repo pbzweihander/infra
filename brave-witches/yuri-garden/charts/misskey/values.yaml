@@ -36,6 +36,8 @@ database:
   extras: {}
 
 redis:
+  image:
+    repository: bitnamilegacy/redis
   auth:
     password: ""
   master:

@@ -1,5 +1,6 @@
 resource "neon_project" "this" {
   name      = "yuri-garden"
+  org_id    = "org-wild-sea-49667236"
   region_id = "aws-ap-southeast-1"
   branch = {
     name = "main"
