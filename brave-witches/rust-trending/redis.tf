@@ -15,7 +15,15 @@ resource "helm_release" "redis" {
   wait = false
 
   values = [yamlencode({
+    global = {
+      security = {
+        allowInsecureImages = true
+      }
+    }
     fullnameOverride = "rust-trending-redis"
+    image = {
+      repository = "bitnamilegacy/redis"
+    }
     architecture     = "standalone"
     auth = {
       password = random_password.redis_password.result
