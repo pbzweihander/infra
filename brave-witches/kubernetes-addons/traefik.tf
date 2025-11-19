@@ -1,7 +1,7 @@
 resource "helm_release" "traefik" {
   repository = "https://traefik.github.io/charts"
   chart      = "traefik"
-  version    = "33.0.0"
+  version    = "37.3.0"
 
   name             = "traefik"
   namespace        = "traefik"
@@ -10,6 +10,13 @@ resource "helm_release" "traefik" {
   wait = false
 
   values = [yamlencode({
+    deployment = {
+      replicas = 3
+    }
+    podDisruptionBudget = {
+      enabled = true
+      minAvailable = 1
+    }
     service = {
       annotations = {
         "service.beta.kubernetes.io/vultr-loadbalancer-sticky-session-enabled"     = "on"
