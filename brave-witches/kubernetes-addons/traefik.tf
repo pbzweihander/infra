@@ -1,7 +1,7 @@
 resource "helm_release" "traefik" {
   repository = "https://traefik.github.io/charts"
   chart      = "traefik"
-  version    = "37.3.0"
+  version    = "38.0.1"
 
   name             = "traefik"
   namespace        = "traefik"
@@ -11,10 +11,10 @@ resource "helm_release" "traefik" {
 
   values = [yamlencode({
     deployment = {
-      replicas = 3
+      replicas = 2
     }
     podDisruptionBudget = {
-      enabled = true
+      enabled      = true
       minAvailable = 1
     }
     service = {
@@ -31,6 +31,14 @@ resource "helm_release" "traefik" {
           }
         }
       }
+    }
+    readinessProbe = {
+      failureThreshold = 3
+      timeoutSeconds   = 10
+    }
+    livenessProbe = {
+      failureThreshold = 5
+      timeoutSeconds   = 20
     }
   })]
 }
