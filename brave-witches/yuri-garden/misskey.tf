@@ -19,7 +19,7 @@ resource "helm_release" "misskey" {
   wait              = false
 
   values = [yamlencode({
-    replicaCount = 3
+    replicaCount = 2
     image = {
       tag = "2025.10.2-yurigarden.0"
     }
