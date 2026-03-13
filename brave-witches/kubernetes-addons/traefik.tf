@@ -22,6 +22,7 @@ resource "helm_release" "traefik" {
         "service.beta.kubernetes.io/vultr-loadbalancer-sticky-session-enabled"     = "on"
         "service.beta.kubernetes.io/vultr-loadbalancer-sticky-session-cookie-name" = "vultr-sticky"
       }
+      ipFamilyPolicy = "PreferDualStack"
     }
     ports = {
       websecure = {
